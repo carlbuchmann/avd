@@ -1,0 +1,13 @@
+{# Add one blank line after each included template #}
+switch:
+{% if design.type == "mpls-vpn" %}
+{%     include 'facts/switch-type-mpls.j2' %}
+
+{% else %}
+{%     include 'facts/switch-type.j2' %}
+
+{% endif %}
+{% include 'facts/underlay-routing-protocol.j2' %}
+
+{% include 'facts/overlay-routing-protocol.j2' %}
+

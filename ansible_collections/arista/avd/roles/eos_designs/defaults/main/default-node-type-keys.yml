@@ -25,3 +25,20 @@ default_node_type_keys:
     overlay_controller:
       type: overlay-controller
       default_evpn_role: server
+
+  "mpls-vpn":
+    p:
+      type: p
+      default_overlay_role: none
+    pe:
+      type: pe
+      connected_endpoints: true
+      default_overlay_role: client
+      network_services:
+        l1: true
+        l2: true
+        l3: true
+      vtep: true
+    rr:
+      type: rr
+      default_overlay_role: server

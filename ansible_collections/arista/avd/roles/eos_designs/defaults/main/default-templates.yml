@@ -51,3 +51,40 @@ default_templates:
       connected_endpoints_port_channel_interfaces: 'interface_descriptions/connected_endpoints/port-channel-interfaces.j2'
       overlay_loopback_interface: 'interface_descriptions/loopback_interfaces/overlay-loopback.j2'
       vtep_loopback_interface: 'interface_descriptions/loopback_interfaces/vtep-loopback.j2'
+
+  mpls-vpn:
+    facts:
+      # Set general "switch.*" variables
+      - template: "facts/main.j2"
+      # Set design specific "switch.*" variables
+      - template: "designs/mpls-vpn/facts/switch/main.j2"
+    topology_facts:
+      # Set design specific "topology.*" variables
+      - template: "designs/mpls-vpn/facts/topology/main.j2"
+    structured_config:
+      # Render Strucured Configuration
+      # Base features
+      - template: "base/main.j2"
+      # Underlay feature
+      - template: "designs/mpls-vpn/underlay/main.j2"
+      # Overlay feature
+      - template: "designs/mpls-vpn/overlay/main.j2"
+      # L3 Edge feature
+      - template: "l3_edge/main.j2"
+      # Tenants feature
+      - template: "designs/mpls-vpn/tenants/main.j2"
+      # Connected Endpoints feature
+      - template: "connected_endpoints/main.j2"
+      # Inband Management feature
+      - template: "inband_management/main.j2"
+      # Merge custom_structured_configuration last
+      - template: "custom_structured_configuration/main.j2"
+        options:
+          list_merge: "{{ custom_structured_configuration_list_merge }}"
+          strip_empty_keys: false
+    ip_addressing:
+      router_id: 'designs/mpls-vpn/ip-addressing/router-id.j2'
+      # p2p_uplinks_ip: 'designs/l3ls-evpn/ip-addressing/p2p-uplinks-ip.j2'
+      # p2p_uplinks_peer_ip: 'designs/l3ls-evpn/ip-addressing/p2p-uplinks-peer-ip.j2'
+      # p2p backbone link IP addressing is handled manually or with unnumbered options. No ipmath necessary atm.
+      # p2p_backbone_links: 'designs/mpls-vpn/ip-addressing/p2p_backbone_links.j2'

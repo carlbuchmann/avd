@@ -1,0 +1,77 @@
+{% set topology_peers = [] %}
+{# all_backbone_interfaces and all_nodes currently not used for anything... #}
+{% set all_backbone_interfaces = [] %}
+{% set all_nodes = [] %}
+{% if p.nodes is arista.avd.defined %}
+{%     for node in p.nodes %}
+{%         do all_nodes.append({p.nodes[node], "node": node}) %}
+{%     endfor %}
+{% endif %}
+{% if pe.node_groups is arista.avd.defined %}
+{%     for node_group in pe.node_groups %}
+{%         if pe.node_groups[node_group].nodes is arista.avd.defined %}
+{%             for node in pe.node_groups[node_group].nodes %}
+{%                 do all_nodes.append({pe.node_groups[node_group].node, "node": node}) %}
+{%             endfor %}
+{%         endif %}
+{%     endfor %}
+{% endif %}
+{% if rr.node_groups is arista.avd.defined %}
+{%     for node_group in rr.node_groups %}
+{%         if rr.node_groups[node_group].nodes is arista.avd.defined %}
+{%             for node in rr.node_groups[node_group].nodes %}
+{%                 do all_nodes.append({rr.node_groups[node_group].node, "node": node}) %}
+{%             endfor %}
+{%         endif %}
+{%     endfor %}
+{% endif %}
+{% for node in all_nodes %}
+{%     for interface in node.backbone_interfaces %}
+{%         set interface.switch = node.node %}
+{%         do all_backbone_interfaces.append(interface) %}
+{%     endfor %}
+{% endfor %}
+topology:
+
+{# topology.links #}
+  links:
+{% for backbone_interface in switch.backbone_interfaces | arista.avd.default([]) %}
+{%     set uplink_switch = backbone_interface["uplink_switch"] %}
+{%     if uplink_switch is arista.avd.defined and uplink_switch in groups[fabric_name] and
+          hostvars[uplink_switch].switch is arista.avd.defined(fail_action='warning',var_name='hostvars[' ~ uplink_switch ~ '].switch') %}
+{%         do topology_peers.append(uplink_switch) %}
+    {{ backbone_interface.interface }}:
+      peer: {{ uplink_switch }}
+      peer_interface: {{ backbone_interface.uplink_switch_interface | arista.avd.default("") }}
+      {# peer_type: {{ hostvars[uplink_switch].type }} #}
+      {# peer_bgp_as: {{ hostvars[uplink_switch].switch.bgp_as | arista.avd.default() }} #}
+      type: underlay_p2p
+{%         if switch.uplink_interface_speed is arista.avd.defined %}
+      speed: {{ switch.uplink_interface_speed }}
+{%         endif %}
+{%         if switch.uplink_bfd is arista.avd.defined(true) %}
+      bfd: true
+{%         endif %}
+{%         if switch.uplink_ptp.enable is arista.avd.defined %}
+      ptp: {{ switch.uplink_ptp.enable }}
+{%         endif %}
+{%         if underlay_rfc5549 is arista.avd.defined(true) %}
+      ipv6_enable: true
+{%         else %}
+{%             if backbone_interface.ip_address is arista.avd.defined() %}
+      ip_address: {{ backbone_interface.ip_address }}
+{%             else %}
+      ip_address: {{"unnumbered loopback " ~ underlay_loopback_number | arista.avd.default("0") }}
+{%             endif %}
+{%         endif %}
+{%     endif %}
+{% endfor %}
+
+{# topology.peers #}
+{# Used during structured_config rendering to quickly scan if this switch has a peering towards the switch being rendered #}
+  peers: {{ topology_peers }}
+
+{# topology.vlans #}
+{# Vlan list taking parent switch vlans into consideration #}
+{# Since this switch is not using port-channels it is just the same as switch.vlans #}
+  vlans: {{ switch.vlans | arista.avd.default([]) }}
