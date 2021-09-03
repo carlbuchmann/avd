@@ -20,12 +20,20 @@ ethernet_interfaces:
     ptp:
       enable: {{ link.ptp }}
 {%         endif %}
+    mpls:
+      ip: true
+{%         if label_distribution.protocol is arista.avd.defined("ldp") %}
+      ldp:
+        interface: true
+{%         endif %}
     type: routed
     shutdown: false
 {%         if link.ipv6_enable is arista.avd.defined(true) %}
     ipv6_enable: true
 {%         endif %}
-{%         if link.ip_address is arista.avd.defined %}
+{%         if link.ip_address is arista.avd.defined and "unnumbered" in link.ip_address | lower %}
+    ip_address: {{ link.ip_address }}
+{%         elif link.ip_address is arista.avd.defined %}
     ip_address: {{ link.ip_address }}/31
 {%         endif %}
 {%         if switch.underlay_routing_protocol == "ospf" %}
@@ -33,7 +41,7 @@ ethernet_interfaces:
     ospf_area: {{ underlay_ospf_area }}
 {%         endif %}
 {%         if switch.underlay_routing_protocol == "isis" %}
-    isis_enable: EVPN_UNDERLAY
+    isis_enable: MPLS_UNDERLAY
     isis_metric: 50
     isis_network_point_to_point: true
 {%         endif %}

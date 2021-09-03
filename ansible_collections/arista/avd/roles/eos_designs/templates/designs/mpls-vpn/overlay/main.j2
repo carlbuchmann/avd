@@ -1,0 +1,23 @@
+{# Add one blank line after each included template #}
+{% if switch.overlay_role is arista.avd.defined and switch.overlay_role in ["client", "server"] %}
+{%     set overlay_data = namespace() %}
+{%     include 'designs/mpls-vpn/overlay/logic-mpls-route-servers.j2' %}
+
+{%     include 'designs/mpls-vpn/overlay/logic-mpls-route-clients.j2' %}
+
+{%     include 'designs/mpls-vpn/overlay/router-bfd.j2' %}
+
+{%     if switch.overlay_routing_protocol == "ebgp" %}
+{%         include 'designs/mpls-vpn/overlay/ebgp/router-bgp.j2' %}
+
+{%         include 'designs/mpls-vpn/overlay/ebgp/route-maps.j2' %}
+
+{%     elif switch.overlay_routing_protocol == "ibgp" %}
+{%         include 'designs/mpls-vpn/overlay/ibgp/router-bgp.j2' %}
+
+{%         include 'designs/mpls-vpn/overlay/ibgp/route-maps.j2' %}
+
+{%         include 'designs/mpls-vpn/overlay/ibgp/ip-extcommunity-lists.j2' %}
+
+{%     endif %}
+{% endif %}

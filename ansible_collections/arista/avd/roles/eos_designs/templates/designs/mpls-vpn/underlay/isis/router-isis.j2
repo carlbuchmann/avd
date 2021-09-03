@@ -1,5 +1,5 @@
 router_isis:
-  instance: EVPN_UNDERLAY
+  instance: MPLS_UNDERLAY
   log_adjacency_changes: true
   net: {{ switch.isis_net }}
   router_id: {{ switch.router_id }}
@@ -18,6 +18,12 @@ router_isis:
     - {{ switch.vtep_loopback }}
 {% endif %}
   is_type: level-2
-  address_family: ['ipv4 unicast']
+  address_family: ['ipv4 unicast', 'ipv6 unicast']
   isis_af_defaults:
     - maximum-paths {{ isis_maximum_paths }}
+{# If label_distribution.protocol is set to isis-sr we also configure that #}
+{% if label_distribution.protocol is arista.avd.defined("isis-sr") %}
+  segment_routing_mpls:
+    router_id: {{ switch.router_id }}
+    enabled: true
+{% endif %}

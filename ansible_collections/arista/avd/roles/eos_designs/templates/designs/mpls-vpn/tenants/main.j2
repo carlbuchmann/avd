@@ -1,0 +1,49 @@
+{# Add one blank line after each included template #}
+{% if switch.network_services_l2 is arista.avd.defined(true) or
+      switch.network_services_l3 is arista.avd.defined(true) or
+      switch.network_services_l1 is arista.avd.defined(true) %}
+{%     set tenants_data = namespace() %}
+{%     include 'designs/mpls-vpn/tenants/logic.j2' %}
+
+{%     if switch.network_services_l2 is arista.avd.defined(true) %}
+{%         include 'designs/mpls-vpn/tenants/vlans.j2' %}
+
+{%         include 'designs/mpls-vpn/tenants/ip-igmp-snooping.j2' %}
+
+{%     endif %}
+{%     if switch.network_services_l1 is arista.avd.defined(true) %}
+{%         include 'designs/mpls-vpn/tenants/pseudowires.j2' %}
+
+{%     endif %}
+{# Only run overlay templates for clients (pes) #}
+{%     if switch.overlay_role is arista.avd.defined("client") %}
+{# {%         include 'designs/mpls-vpn/tenants/vxlan-interface.j2' %} #}
+
+{%         include 'designs/mpls-vpn/tenants/router-bgp.j2' %}
+
+{# Only run L3 related templates for L3 VTEPs #}
+{%         if switch.network_services_l3 is arista.avd.defined(true) and
+              switch.evpn_services_l2_only is not arista.avd.defined(true) %}
+{%             include 'designs/mpls-vpn/tenants/vrfs.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/vlan-interfaces.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/static-routes.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/ethernet-interfaces.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/loopback-interfaces.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/route-maps.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/virtual-source-nat-vrfs.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/ip-virtual-router-mac-address.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/eos-cli.j2' %}
+
+{%             include 'designs/mpls-vpn/tenants/structured-config.j2' %}
+
+{%         endif %}
+{%     endif %}
+{% endif %}

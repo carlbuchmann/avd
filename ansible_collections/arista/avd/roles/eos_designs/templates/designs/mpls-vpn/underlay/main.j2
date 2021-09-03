@@ -25,4 +25,8 @@
 {%         include 'designs/mpls-vpn/underlay/ospf/router-ospf.j2'%}
 
 {%     endif %}
+{%     if label_distribution.protocol is arista.avd.defined("ldp") %}
+{%         include 'designs/mpls-vpn/underlay/ldp/mpls-ldp.j2'%}
+
+{%     endif %}
 {% endif %}

@@ -54,22 +54,22 @@ default_templates:
 
   mpls-vpn:
     facts:
-      # Set general "switch.*" variables
+      # Set general "switch.*" variables - FIXED
       - template: "facts/main.j2"
-      # Set design specific "switch.*" variables
+      # Set design specific "switch.*" variables - FIXED
       - template: "designs/mpls-vpn/facts/switch/main.j2"
     topology_facts:
-      # Set design specific "topology.*" variables
+      # Set design specific "topology.*" variables - FIXED
       - template: "designs/mpls-vpn/facts/topology/main.j2"
     structured_config:
       # Render Strucured Configuration
-      # Base features
+      # Base features - FIXED
       - template: "base/main.j2"
-      # Underlay feature
+      # Underlay feature - FIXED
       - template: "designs/mpls-vpn/underlay/main.j2"
-      # Overlay feature
+      # Overlay feature - FIXED
       - template: "designs/mpls-vpn/overlay/main.j2"
-      # L3 Edge feature
+      # L3 Edge feature - FIXED/NO ACTION
       - template: "l3_edge/main.j2"
       # Tenants feature
       - template: "designs/mpls-vpn/tenants/main.j2"
