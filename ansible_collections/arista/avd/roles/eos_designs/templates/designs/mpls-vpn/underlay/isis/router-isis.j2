@@ -14,10 +14,10 @@ router_isis:
 {% if switch.mlag_l3 is arista.avd.defined(true) %}
     - Vlan{{ switch.mlag_peer_l3_vlan }}
 {% endif %}
-{% if switch.vtep is arista.avd.defined(true) %}
-    - {{ switch.vtep_loopback }}
-{% endif %}
   is_type: level-2
+{% if isis_advertise_passive_only is arista.avd.defined(true) %}
+  advertise_passive_only: true
+{% endif %}
   address_family: ['ipv4 unicast', 'ipv6 unicast']
   isis_af_defaults:
     - maximum-paths {{ isis_maximum_paths }}

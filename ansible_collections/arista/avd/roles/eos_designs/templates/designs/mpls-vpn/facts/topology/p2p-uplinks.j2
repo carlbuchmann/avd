@@ -1,36 +1,5 @@
 {% set topology_peers = [] %}
 {# all_backbone_interfaces and all_nodes currently not used for anything... #}
-{% set all_backbone_interfaces = [] %}
-{% set all_nodes = [] %}
-{% if p.nodes is arista.avd.defined %}
-{%     for node in p.nodes %}
-{%         do all_nodes.append({p.nodes[node], "node": node}) %}
-{%     endfor %}
-{% endif %}
-{% if pe.node_groups is arista.avd.defined %}
-{%     for node_group in pe.node_groups %}
-{%         if pe.node_groups[node_group].nodes is arista.avd.defined %}
-{%             for node in pe.node_groups[node_group].nodes %}
-{%                 do all_nodes.append({pe.node_groups[node_group].node, "node": node}) %}
-{%             endfor %}
-{%         endif %}
-{%     endfor %}
-{% endif %}
-{% if rr.node_groups is arista.avd.defined %}
-{%     for node_group in rr.node_groups %}
-{%         if rr.node_groups[node_group].nodes is arista.avd.defined %}
-{%             for node in rr.node_groups[node_group].nodes %}
-{%                 do all_nodes.append({rr.node_groups[node_group].node, "node": node}) %}
-{%             endfor %}
-{%         endif %}
-{%     endfor %}
-{% endif %}
-{% for node in all_nodes %}
-{%     for interface in node.backbone_interfaces %}
-{%         set interface.switch = node.node %}
-{%         do all_backbone_interfaces.append(interface) %}
-{%     endfor %}
-{% endfor %}
 topology:
 
 {# topology.links #}
@@ -43,8 +12,6 @@ topology:
     {{ backbone_interface.interface }}:
       peer: {{ uplink_switch }}
       peer_interface: {{ backbone_interface.uplink_switch_interface | arista.avd.default("") }}
-      {# peer_type: {{ hostvars[uplink_switch].type }} #}
-      {# peer_bgp_as: {{ hostvars[uplink_switch].switch.bgp_as | arista.avd.default() }} #}
       type: underlay_p2p
 {%         if switch.uplink_interface_speed is arista.avd.defined %}
       speed: {{ switch.uplink_interface_speed }}
@@ -58,11 +25,9 @@ topology:
 {%         if underlay_rfc5549 is arista.avd.defined(true) %}
       ipv6_enable: true
 {%         else %}
-{%             if backbone_interface.ip_address is arista.avd.defined() %}
-      ip_address: {{ backbone_interface.ip_address }}
-{%             else %}
-      ip_address: {{"unnumbered loopback " ~ underlay_loopback_number | arista.avd.default("0") }}
-{%             endif %}
+{# {%             set uplink_switch_index = loop.index0 %} #}
+      ip_address: {% include switch.ip_addressing.p2p_uplinks_ip %}
+
 {%         endif %}
 {%     endif %}
 {% endfor %}

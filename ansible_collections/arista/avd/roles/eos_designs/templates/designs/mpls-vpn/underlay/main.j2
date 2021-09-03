@@ -17,7 +17,9 @@
 {%         include 'designs/mpls-vpn/underlay/ebgp/prefix-lists.j2' %}
 
 {%         include 'designs/mpls-vpn/underlay/ebgp/route-maps.j2' %} #}
+{% include 'designs/mpls-vpn/underlay/mpls/mpls-ip.j2' %}
 
+{# ISIS-SR is applied in the router-isis.j2 template #}
 {%     if switch.underlay_routing_protocol == "isis" %}
 {%         include 'designs/mpls-vpn/underlay/isis/router-isis.j2'%}
 
@@ -26,7 +28,7 @@
 
 {%     endif %}
 {%     if label_distribution.protocol is arista.avd.defined("ldp") %}
-{%         include 'designs/mpls-vpn/underlay/ldp/mpls-ldp.j2'%}
+{%         include 'designs/mpls-vpn/underlay/mpls/mpls-ldp.j2' %}
 
 {%     endif %}
 {% endif %}

@@ -3,6 +3,7 @@
 
 {# Add underlay links defined on other devices pointing to this device #}
 {% for fabric_switch in groups[fabric_name] | arista.avd.natural_sort %}
+{# Below: if this switch is in the topology peers for the switch being currently checked #}
 {%     if inventory_hostname in hostvars[fabric_switch].topology.peers | arista.avd.default([]) %}
 {%         set fabric_switch_vars = hostvars[fabric_switch] %}
 {%         for fabric_switch_interface in fabric_switch_vars.topology.links | arista.avd.natural_sort %}
@@ -15,8 +16,10 @@
 {%                 set link.peer_bgp_as = fabric_switch_vars.switch.bgp_as | arista.avd.default() %}
 {%                 set link.type = fabric_switch_link.type | arista.avd.default() %}
 {%                 set link.speed = fabric_switch_link.speed | arista.avd.default() %}
-{%                 set link.ip_address = fabric_switch_link.peer_ip_address | arista.avd.default() %}
-{%                 set link.peer_ip_address = fabric_switch_link.ip_address | arista.avd.default() %}
+{# {%                 set link.ip_address = fabric_switch_link.peer_ip_address | arista.avd.default() %} #}
+{%                 set link.ip_address = "unnumbered Loopback0" %}
+{# {%                 set link.peer_ip_address = fabric_switch_link.ip_address | arista.avd.default() %} #}
+{%                 set link.peer_ip_address = "dummy" %}
 {%                 set link.channel_group_id = fabric_switch_link.peer_channel_group_id | arista.avd.default() %}
 {%                 set link.peer_channel_group_id = fabric_switch_link.channel_group_id | arista.avd.default() %}
 {%                 set link.channel_description = fabric_switch_link.peer_channel_description | arista.avd.default() %}

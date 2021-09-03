@@ -8,6 +8,9 @@ router isis {{ router_isis.instance }}
 {%     if router_isis.is_type is arista.avd.defined %}
    is-type {{ router_isis.is_type }}
 {%     endif %}
+{%     if router_isis.advertise_passive_only is arista.avd.defined(true) %}
+   advertise passive-only
+{%     endif %}
 {%     if router_isis.router_id is arista.avd.defined %}
    router-id ipv4 {{ router_isis.router_id }}
 {%     endif %}

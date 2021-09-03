@@ -65,25 +65,6 @@ switch:
   spanning_tree_mode: "none"
 {% endif %}
 
-{# switch.max_uplink_switches: Don't need this. #}
-{# {% set switch_max_uplink_switches = switch_data.combined.max_uplink_switches | arista.avd.default(
-                                    switch_data.combined.uplink_switches | arista.avd.default([]) | length) %}
-  max_uplink_switches: {{ switch_max_uplink_switches }} #}
-
-{# switch.max_parallel_uplinks: Don't need this. #}
-{# {% set switch_max_parallel_uplinks = switch_data.combined.max_parallel_uplinks | arista.avd.default(1) %}
-  max_parallel_uplinks: {{ switch_max_parallel_uplinks }} #}
-
-{# switch.uplink_switches: Don't need this. #}
-{# {% set switch_uplink_switches = switch_data.combined.uplink_switches | arista.avd.default() %}
-  uplink_switches: {{ switch_uplink_switches }} #}
-
-{# switch.uplink_switch_interfaces: Don't need this. #}
-  {# uplink_switch_interfaces: {{ switch_data.combined.uplink_switch_interfaces | arista.avd.default() }} #}
-{#
-{# switch.uplink_interfaces: Don't need this. #}
-  uplink_interfaces: {{ switch_data.combined.uplink_interfaces | arista.avd.default() }} #}
-
 {# switch.backbone_interfaces #}
   backbone_interfaces: {{ switch_data.combined.backbone_interfaces | arista.avd.default() }}
 
@@ -160,163 +141,18 @@ switch:
 {%     endif %}
 
 {# switch.isis_net #}
-{%     if switch_data.combined.isis_system_id_prefix is arista.avd.defined %}
-  isis_net: {{ isis_area_id }}.{{ switch_data.combined.isis_system_id_prefix }}.{{ '%04d' | format(switch_id) }}.00
+{%     if switch_data.combined.isis_system_id_prefix is not arista.avd.defined %}
+{%         set isis_system_id_prefix = "0000.0000" %}
+{%     else %}
+{%         set isis_system_id_prefix = switch_data.combined.isis_system_id_prefix %}
+{%     endif %}
+{%     if isis_system_id_prefix is arista.avd.defined %}
+  isis_net: {{ isis_area_id }}.{{ isis_system_id_prefix }}.{{ '%04d' | format(switch_id) }}.00
 {%     endif %}
 {% endif %}
 
 {# switch.short_esi #}
   short_esi: {{ switch_data.combined.short_esi | arista.avd.default() }}
-
-{########################}
-{# MLAG related facts, no need for any of this...   #}
-{# {% if switch.mlag_support is arista.avd.defined(true) and
-      switch_data.combined.mlag | arista.avd.default(true) and
-      switch_data.node_group.nodes | arista.avd.default([]) | length == 2 %}
-{%     set switch_data.mlag_configured = true %}
-
-{# switch.mlag #}
-  mlag: true
-
-{# switch.mlag_group #}
-  mlag_group: {{ switch_data.group }}
-
-{# switch.mlag_ibgp_origin_incomplete #}
-  mlag_ibgp_origin_incomplete: {{ switch_data.combined.mlag_ibgp_origin_incomplete | arista.avd.default(true) }}
-
-{# switch.mlag_peer_vlan #}
-{%     set mlag_peer_vlan = switch_data.combined.mlag_peer_vlan | arista.avd.default(4094) %}
-  mlag_peer_vlan: {{ mlag_peer_vlan }}
-
-{# switch.mlag_dual_primary_detection #}
-  mlag_dual_primary_detection: {{ switch_data.combined.mlag_dual_primary_detection | arista.avd.default(false) }}
-
-{# switch.mlag_dual_primary_detection #}
-  mlag_interfaces: {{ switch_data.combined.mlag_interfaces | arista.avd.default() }}
-
-{# switch.mlag_l3 #}
-{# switch.mlag_peer_l3_vlan #}
-{%     if switch.underlay_router is arista.avd.defined(true) %}
-  mlag_l3: true
-{%         if switch_data.combined.mlag_peer_l3_vlan | arista.avd.default(4093) is not in [false,mlag_peer_vlan] %}
-{%             set mlag_peer_l3_vlan = switch_data.combined.mlag_peer_l3_vlan | arista.avd.default(4093) %}
-  mlag_peer_l3_vlan: {{ mlag_peer_l3_vlan }}
-{%         endif %}
-{%     endif %}
-
-{%     if switch_data.node_group.nodes.keys() | list | first == inventory_hostname %}
-{%         set mlag_primary_id = switch_id %}
-{%         set mlag_peer_hostname = switch_data.node_group.nodes.keys() | list | last %}
-{%         set mlag_secondary_id = switch_data.node_group.nodes[mlag_peer_hostname].id %}
-
-{# switch.mlag_role #}
-  mlag_role: "primary"
-
-{# switch.mlag_peer #}
-  mlag_peer: {{ mlag_peer_hostname }}
-
-{# switch.mlag_peer_mgmt_ip #}
-{%         if switch_data.node_group.nodes[mlag_peer_hostname].mgmt_ip | arista.avd.default() is truthy %}
-  mlag_peer_mgmt_ip: {{ switch_data.node_group.nodes[mlag_peer_hostname].mgmt_ip | ansible.netcommon.ipaddr('address') }}
-{%         endif %}
-
-{# switch.mlag_ip #}
-  mlag_ip: {% include switch.ip_addressing.mlag_ip_primary %}
-
-{# switch.mlag_peer_ip #}
-  mlag_peer_ip: {% include switch.ip_addressing.mlag_ip_secondary %}
-
-{# switch.mlag_l3_ip #}
-{# switch.mlag_peer_l3_ip #}
-{%         if switch.underlay_router is arista.avd.defined(true) and mlag_peer_l3_vlan is arista.avd.defined %}
-  mlag_l3_ip: {% include switch.ip_addressing.mlag_l3_ip_primary %}
-
-  mlag_peer_l3_ip: {% include switch.ip_addressing.mlag_l3_ip_secondary %}
-
-{%         endif %}
-
-{%     elif switch_data.node_group.nodes.keys()| list | last == inventory_hostname %}
-{%         set mlag_secondary_id = switch_id %}
-{%         set mlag_peer_hostname = switch_data.node_group.nodes.keys()| list | first %}
-{%         set mlag_primary_id = switch_data.node_group.nodes[mlag_peer_hostname].id %}
-
-{# switch.mlag_role #}
-  mlag_role: "secondary"
-
-{# switch.mlag_peer #}
-  mlag_peer: {{ mlag_peer_hostname }}
-
-{# switch.mlag_peer_mgmt_ip #}
-{%         if switch_data.node_group.nodes[mlag_peer_hostname].mgmt_ip | arista.avd.default() is truthy %}
-  mlag_peer_mgmt_ip: {{ switch_data.node_group.nodes[mlag_peer_hostname].mgmt_ip | ansible.netcommon.ipaddr('address') }}
-{%         endif %}
-
-{# switch.mlag_ip #}
-  mlag_ip: {% include switch.ip_addressing.mlag_ip_secondary %}
-
-{# switch.mlag_peer_ip #}
-  mlag_peer_ip: {% include switch.ip_addressing.mlag_ip_primary %}
-
-{# switch.mlag_l3_ip #}
-{# switch.mlag_peer_l3_ip #}
-{%         if switch.underlay_router is arista.avd.defined(true) and mlag_peer_l3_vlan is arista.avd.defined %}
-  mlag_l3_ip: {% include switch.ip_addressing.mlag_l3_ip_secondary %}
-
-  mlag_peer_l3_ip: {% include switch.ip_addressing.mlag_l3_ip_primary %}
-
-{%         endif %}
-{%     endif %}
-{% else %}
-  mlag: false
-{% endif %} #}
-
-{########################}
-{# VTEP related facts, not really needed either   #}
-{# {% if switch.vtep is arista.avd.defined(true) and
-      switch_data.combined.vtep_loopback_ipv4_pool is arista.avd.defined(fail_action='error',var_name='vtep_loopback_ipv4_pool') %}
-
-{# switch.vtep_loopback_ipv4_pool #}
-{%     set switch_vtep_loopback_ipv4_pool = switch_data.combined.vtep_loopback_ipv4_pool %}
-  vtep_loopback_ipv4_pool: {{ switch_vtep_loopback_ipv4_pool }}
-
-{# switch.vtep_loopback #}
-  vtep_loopback: {{ switch_data.combined.vtep_loopback | arista.avd.default('Loopback1') }}
-
-{# switch.vtep_ip #}
-{%     if switch_data.mlag_configured is arista.avd.defined(true) %}
-  vtep_ip: {% include switch.ip_addressing.vtep_ip_mlag %}
-{%     else %}
-  vtep_ip: {% include switch.ip_addressing.vtep_ip %}
-{%     endif %}
-
-{# switch.evpn_services_l2_only #}
-  evpn_services_l2_only: {{ switch_data.combined.evpn_services_l2_only | arista.avd.default(false) }}
-
-{% endif %} #}
-
-{#####################################}
-{# Inband management related facts: not really needed   #}
-{# {% if switch_data.combined.inband_management_subnet is arista.avd.defined and
-      switch.uplink_type is arista.avd.defined('port-channel') %}
-{%     set inband_management_gateway = switch_data.combined.inband_management_subnet | ansible.netcommon.ipaddr('network') | ansible.netcommon.ipmath(1) %}
-{%     set inband_management_ip = switch_data.combined.inband_management_subnet | ansible.netcommon.ipaddr('network') | ansible.netcommon.ipmath(3 + switch_id) %}
-{%     set inband_management_prefix = switch_data.combined.inband_management_subnet | ansible.netcommon.ipaddr('prefix') %}
-{# switch.inband_management_role #}
-  inband_management_role: child
-{# switch.inband_management_parents #}
-  inband_management_parents: {{ switch_uplink_switches }}
-{# switch.inband_management_subnet #}
-  inband_management_subnet: {{ switch_data.combined.inband_management_subnet }}
-{# switch.inband_management_ip #}
-  inband_management_ip: {{ inband_management_ip ~ '/' ~ inband_management_prefix }}
-{# switch.inband_management_gateway #}
-  inband_management_gateway: {{ inband_management_gateway }}
-{# switch.inband_management_vlan #}
-  inband_management_vlan: {{ switch_data.combined.inband_management_vlan | arista.avd.default('4092') }}
-{# switch.inband_management_interface #}
-  inband_management_interface: {{ 'Vlan' ~ switch_data.combined.inband_management_vlan | arista.avd.default('4092') }}
-{% endif %} #}
-
 
 {% if switch.network_services_l2 is arista.avd.defined(true) or
       switch.network_services_l3 is arista.avd.defined(true) or
