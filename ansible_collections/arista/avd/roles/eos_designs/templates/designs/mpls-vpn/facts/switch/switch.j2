@@ -199,9 +199,12 @@ switch:
 {%         endif %}
 {%     endfor %}
 
+  evpn_services_l2_only: false
+
 {# switch.tenants #}
   tenants: {{ pe.tenants }}
 
 {# switch.vlans #}
   vlans: {{ pe.vlans | unique }}
 {% endif %}
+

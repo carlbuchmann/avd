@@ -5,28 +5,28 @@
 {%         for vrf in switch.tenants[tenant].vrfs | arista.avd.natural_sort %}
 {%             for svi in switch.tenants[tenant].vrfs[vrf].svis | arista.avd.natural_sort %}
 {%                 set svi_int = svi | int %}
-{%                 set vni = tenants[tenant].vrfs[vrf].svis[svi].vni_override | arista.avd.default(
-                             tenants[tenant].mac_vrf_vni_base + svi_int) %}
+{%                 set rt = tenants[tenant].vrfs[vrf].svis[svi].vni_override | arista.avd.default(
+                             tenants[tenant].mac_vrf_rt_base + svi_int) %}
     {{ svi }}:
       tenant: {{ tenant }}
-      rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ vni }}"
+      rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ rt }}"
       route_targets:
         both:
-          - "{{ tenants_data.overlay_rt_admin_subfield or vni }}:{{ vni }}"
+          - "{{ tenants_data.overlay_rt_admin_subfield or rt }}:{{ rt }}"
       redistribute_routes:
         - learned
 {%             endfor %}
 {%         endfor %}
 {%         for l2vlan in switch.tenants[tenant].l2vlans | arista.avd.natural_sort %}
 {%             set l2vlan_int = l2vlan | int %}
-{%             set vni = tenants[tenant].l2vlans[l2vlan].vni_override | arista.avd.default(
-                         tenants[tenant].mac_vrf_vni_base + l2vlan_int) %}
+{%             set rt = tenants[tenant].l2vlans[l2vlan].rt_override | arista.avd.default(
+                         tenants[tenant].mac_vrf_rt_base + l2vlan_int) %}
     {{ l2vlan }}:
       tenant: {{ tenant }}
-      rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ vni }}"
+      rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ rt }}"
       route_targets:
         both:
-          - "{{ tenants_data.overlay_rt_admin_subfield or vni }}:{{ vni }}"
+          - "{{ tenants_data.overlay_rt_admin_subfield or rt }}:{{ rt }}"
       redistribute_routes:
         - learned
 {%         endfor %}

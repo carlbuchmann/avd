@@ -3,6 +3,7 @@
       switch.network_services_l3 is arista.avd.defined(true) or
       switch.network_services_l1 is arista.avd.defined(true) %}
 {%     set tenants_data = namespace() %}
+{# logic just sets overlay rd/rt admin subfields #}
 {%     include 'designs/mpls-vpn/tenants/logic.j2' %}
 
 {%     if switch.network_services_l2 is arista.avd.defined(true) %}
