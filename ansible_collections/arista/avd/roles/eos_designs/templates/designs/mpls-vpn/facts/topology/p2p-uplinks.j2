@@ -22,13 +22,10 @@ topology:
 {%         if switch.uplink_ptp.enable is arista.avd.defined %}
       ptp: {{ switch.uplink_ptp.enable }}
 {%         endif %}
-{%         if underlay_rfc5549 is arista.avd.defined(true) %}
       ipv6_enable: true
-{%         else %}
 {# {%             set uplink_switch_index = loop.index0 %} #}
       ip_address: {% include switch.ip_addressing.p2p_uplinks_ip %}
 
-{%         endif %}
 {%     endif %}
 {% endfor %}
 

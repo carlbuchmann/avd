@@ -26,8 +26,8 @@ router_bgp:
     neighbor_default_encapsulation:
       mpls: true
 {% if switch.overlay_role == "client" %}
-      next_hop_self: true
-      source_interface: Loopback0
+      next_hop_self:
+        source_interface: Loopback0
 {% endif %}
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
@@ -47,8 +47,8 @@ router_bgp:
     neighbor_default_encapsulation:
       mpls: true
 {% if switch.overlay_role == "client" %}
-      next_hop_self: true
-      source_interface: Loopback0
+      next_hop_self:
+        source_interface: Loopback0
 {% endif %}
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:

@@ -110,7 +110,9 @@ switch:
 
 {# switch.bgp_as #}
 {%     if bgp_as is arista.avd.defined and switch.overlay_routing_protocol == 'ibgp' %}
+{%         if switch.type in ["rr", "pe"] %}
   bgp_as: {{ bgp_as }}
+{%         endif %}
 {%     else %}
 {%         if switch_data.combined.bgp_as is arista.avd.defined(fail_action='error', var_name='bgp_as') %}
   bgp_as: {{ switch_data.combined.bgp_as }}

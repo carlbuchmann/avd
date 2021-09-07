@@ -1,4 +1,4 @@
-{% if switch.bgp_as is arista.avd.defined and switch.overlay_role in ["server", "client"] %}
+{% if switch.bgp_as is arista.avd.defined %}
 router_bgp:
   as: "{{ switch.bgp_as }}"
   router_id: {{ switch.router_id }}
