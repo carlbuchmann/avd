@@ -17,9 +17,11 @@
 {%                 set link.type = fabric_switch_link.type | arista.avd.default() %}
 {%                 set link.speed = fabric_switch_link.speed | arista.avd.default() %}
 {# {%                 set link.ip_address = fabric_switch_link.peer_ip_address | arista.avd.default() %} #}
-{%                 set link.ip_address = "unnumbered Loopback0" %}
+{# {%                 set link.ip_address = "unnumbered Loopback0" %} #}
+{# {%                 set link.ip_address = underlay_data.links. %} #}
+{# {%                 set link.ip_address = hostvars[inventory_hostname].topology.links[link.peer_interface].ip_address | arista.avd.default ("unnumbered Loopback0") %} #}
 {# {%                 set link.peer_ip_address = fabric_switch_link.ip_address | arista.avd.default() %} #}
-{%                 set link.peer_ip_address = "dummy" %}
+{# {%                 set link.peer_ip_address = "dummy" %} #}
 {%                 set link.channel_group_id = fabric_switch_link.peer_channel_group_id | arista.avd.default() %}
 {%                 set link.peer_channel_group_id = fabric_switch_link.channel_group_id | arista.avd.default() %}
 {%                 set link.channel_description = fabric_switch_link.peer_channel_description | arista.avd.default() %}
@@ -29,6 +31,7 @@
 {%                 set link.short_esi = fabric_switch_link.peer_short_esi | arista.avd.default() %}
 {%                 set link.ipv6_enable = fabric_switch_link.ipv6_enable | arista.avd.default() %}
 {%                 set interface = fabric_switch_link.peer_interface %}
+{%                 set link.ip_address = topology.links[interface].ip_address | arista.avd.default("unnumbered Loopback0") %}
 {%                 do underlay_data.links.update({interface: link}) %}
 {%             endif %}
 {%         endfor %}

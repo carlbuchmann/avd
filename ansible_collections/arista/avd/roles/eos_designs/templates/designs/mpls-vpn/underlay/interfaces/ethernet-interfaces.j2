@@ -34,7 +34,7 @@ ethernet_interfaces:
 {%         if link.ip_address is arista.avd.defined and "unnumbered" in link.ip_address | lower %}
     ip_address: {{ link.ip_address }}
 {%         elif link.ip_address is arista.avd.defined %}
-    ip_address: {{ link.ip_address }}/31
+    ip_address: {{ link.ip_address }}
 {%         endif %}
 {%         if switch.underlay_routing_protocol == "ospf" %}
     ospf_network_point_to_point: true
