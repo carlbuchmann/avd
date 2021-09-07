@@ -126,13 +126,6 @@ switch:
 {%     set switch_overlay_role = switch_data.combined.overlay_role | arista.avd.default(
                           switch.default_overlay_role) %}
   overlay_role: {{ switch_overlay_role }}
-{# {%     if type == "rr" %}
-{%         set switch_overlay_role = "server" %}
-{%     elif type == "pe" %}
-{%         set switch_overlay_role = "client" %}
-{%     else %}
-{%         set switch_overlay_role = "none" %}
-{%     endif %} #}
 
 {# switch.mpls_route_reflectors #}
 {# For clients the default value for MPLS route reflectors should be content of all existing mpls route reflectors in the fabric. #}
