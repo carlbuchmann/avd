@@ -135,6 +135,10 @@ switch:
   mpls_route_reflectors: {{ switch_data.combined.mpls_route_reflectors | arista.avd.default() }}
 {%     endif %}
 
+{%     if switch_overlay_role == "server" %}
+  bgp_cluster_id: {{ switch_data.combined.bgp_cluster_id | arista.avd.default() }}
+{%     endif %}
+
 {# switch.isis_net #}
 {%     if switch_data.combined.isis_system_id_prefix is not arista.avd.defined %}
 {%         set isis_system_id_prefix = "0000.0000" %}

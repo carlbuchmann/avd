@@ -8,27 +8,20 @@
 
 {# EBGP #}
 {% if switch.underlay_router is arista.avd.defined(true) %}
-{% include 'designs/mpls-vpn/underlay/interfaces/loopback-interfaces.j2' %}
+{%     include 'designs/mpls-vpn/underlay/interfaces/loopback-interfaces.j2' %}
 
-{# Don't need ebgp underlay stuff #}
-{# {%     if switch.underlay_routing_protocol == "ebgp" %}
-{%         include 'designs/mpls-vpn/underlay/ebgp/router-bgp.j2'%}
+{%     include 'designs/mpls-vpn/underlay/mpls/mpls-ip.j2' %}
 
-{%         include 'designs/mpls-vpn/underlay/ebgp/prefix-lists.j2' %}
+{%     if label_distribution.protocol is arista.avd.defined("ldp") %}
+{%         include 'designs/mpls-vpn/underlay/mpls/mpls-ldp.j2' %}
 
-{%         include 'designs/mpls-vpn/underlay/ebgp/route-maps.j2' %} #}
-{% include 'designs/mpls-vpn/underlay/mpls/mpls-ip.j2' %}
-
+{%     endif %}
 {# ISIS-SR is applied in the router-isis.j2 template #}
 {%     if switch.underlay_routing_protocol == "isis" %}
 {%         include 'designs/mpls-vpn/underlay/isis/router-isis.j2'%}
 
 {%     elif switch.underlay_routing_protocol == "ospf" %}
 {%         include 'designs/mpls-vpn/underlay/ospf/router-ospf.j2'%}
-
-{%     endif %}
-{%     if label_distribution.protocol is arista.avd.defined("ldp") %}
-{%         include 'designs/mpls-vpn/underlay/mpls/mpls-ldp.j2' %}
 
 {%     endif %}
 {% endif %}

@@ -1,7 +1,7 @@
 router_bgp:
 
 {% if switch.overlay_role == "server" %}
-  bgp_cluster_id: {{ switch.router_id }}
+  bgp_cluster_id: {{ switch.bgp_cluster_id | arista.avd.default(switch.router_id) }}
 {% endif %}
 
   peer_groups:

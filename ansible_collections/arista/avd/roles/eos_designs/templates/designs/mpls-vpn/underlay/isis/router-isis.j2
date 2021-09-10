@@ -18,9 +18,23 @@ router_isis:
 {% if isis_advertise_passive_only is arista.avd.defined(true) %}
   advertise_passive_only: true
 {% endif %}
+{% if label_distribution.protocol is arista.avd.defined("ldp") %}
+  mpls_ldp_sync_default: true
+{% endif %}
+{% if isis_ti_lfa.enabled is not arista.avd.defined(false) %}
+  timers:
+    local_convergence:
+      delay: {{ isis_ti_lfa.local_convergence_delay | arista.avd.default("10000") }}
+      protected_prefixes: true
+{% endif %}
   address_family: ['ipv4 unicast', 'ipv6 unicast']
   isis_af_defaults:
     - maximum-paths {{ isis_maximum_paths }}
+{% if isis_ti_lfa.protection is arista.avd.defined("link") %}
+    - fast-reroute ti-lfa mode link-protection {{isis_underlay_level | arista.avd.default("level-2") }}
+{% elif isis_ti_lfa.protection is arista.avd.defined("node") %}
+    - fast-reroute ti-lfa mode node-protection {{isis_underlay_level | arista.avd.default("level-2") }}
+{% endif %}
 {# If label_distribution.protocol is set to isis-sr we also configure that #}
 {% if label_distribution.protocol is arista.avd.defined("isis-sr") %}
   segment_routing_mpls:
