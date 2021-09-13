@@ -1,0 +1,18 @@
+patch_panel:
+  patches:
+{% for tenant in switch.tenants | arista.avd.natural_sort %}
+{%     for l1_service in tenants[tenant].l1_services | arista.avd.default([]) %}
+{%         for node in l1_service.nodes %}
+{%             if node == inventory_hostname %}
+    - name: {{ l1_service.name }}
+      connectors:
+        - id: 1
+          interface: {{ l1_service.interfaces[loop.index0] }}
+{%                 if l1_service.type is arista.avd.defined("vpws-pseudowire") %}
+        - id: 2
+          pseudowire: "bgp vpws {{ tenant }} pseudowire {{ l1_service.name }}"
+{%                 endif %}
+{%             endif %}
+{%         endfor %}
+{%     endfor %}
+{% endfor %}
