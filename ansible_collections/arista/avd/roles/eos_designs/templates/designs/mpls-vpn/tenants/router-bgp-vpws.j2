@@ -1,0 +1,22 @@
+  vpws:
+{% for tenant in switch.tenants | arista.avd.natural_sort %}
+{%     if tenants[tenant].l1_services is arista.avd.defined and tenants[tenant].pw_rt_base is arista.avd.defined %}
+    {{ tenant }}:
+{%         set rt = tenants[tenant].pw_rt_base %}
+      rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ rt }}"
+      route_targets:
+        import_export: "{{ tenants_data.overlay_rt_admin_subfield or rt }}:{{ rt }}"
+      pseudowires:
+{%         for l1_service in tenants[tenant].l1_services | arista.avd.default([]) %}
+{%             if l1_service.nodes is arista.avd.defined and inventory_hostname in l1_service.nodes and l1_service.interfaces is arista.avd.defined %}
+{%                 for node in l1_service.nodes %}
+{%                     if node == inventory_hostname %}
+        - name: {{ l1_service.name }}
+          id_local: {{ l1_service.ids[loop.index0] }}
+          id_remote: {{ l1_service.ids[loop.index0-1] }}
+{%                     endif %}
+{%                 endfor %}
+{%             endif %}
+{%         endfor %}
+{%     endif %}
+{% endfor %}

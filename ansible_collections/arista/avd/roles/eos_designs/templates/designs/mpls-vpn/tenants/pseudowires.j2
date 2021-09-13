@@ -1,1 +1,44 @@
-{# Not implemented yet #}
+{% set l1_service_subif_parents = [] %}
+ethernet_interfaces:
+{% for tenant in switch.tenants | arista.avd.natural_sort %}
+{%     for l1_service in tenants[tenant].l1_services | arista.avd.default([]) %}
+{%         if l1_service.nodes is arista.avd.defined and inventory_hostname in l1_service.nodes and l1_service.interfaces is arista.avd.defined %}
+{%             for node in l1_service.nodes %}
+{%                 if node == inventory_hostname %}
+{%                     if '.' in l1_service.interfaces[loop.index0] %}
+{%                         set l1_service_subif_id = l1_service.encapsulation_dot1q_vlan[loop.index0] | arista.avd.default(
+                              l1_service.interfaces[loop.index0].split('.') | last) %}
+{%                         do l1_service_subif_parents.append(l1_service.interfaces[loop.index0].split('.') | first) %}
+{%                     endif %}
+  {{ l1_service.interfaces[loop.index0] }}:
+{%                     if l3_interface_subif_id is arista.avd.defined %}
+    type: l3dot1q
+    encapsulation_dot1q_vlan: {{ l3_interface_subif_id }}
+{%                     else %}
+    type: routed
+    lldp_transmit: false
+    lldp_receive: false
+{%                     endif %}
+{%                 endif %}
+{%             endfor %}
+{%         endif %}
+{%     endfor %}
+{% endfor %}
+patch_panel:
+  patches:
+{% for tenant in switch.tenants | arista.avd.natural_sort %}
+{%     for l1_service in tenants[tenant].l1_services | arista.avd.default([]) %}
+{%         for node in l1_service.nodes %}
+{%             if node == inventory_hostname %}
+    - name: {{ l1_service.name }}
+      connectors:
+        - id: 1
+          interface: {{ l1_service.interfaces[loop.index0] }}
+{%                 if l1_service.type is arista.avd.defined("vpws-pseudowire") %}
+        - id: 2
+          pseudowire: "bgp vpws {{ tenant }} pseudowire {{ l1_service.name }}"
+{%                 endif %}
+{%             endif %}
+{%         endfor %}
+{%     endfor %}
+{% endfor %}
