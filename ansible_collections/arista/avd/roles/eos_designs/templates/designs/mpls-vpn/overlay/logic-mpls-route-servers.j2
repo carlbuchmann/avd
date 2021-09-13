@@ -13,3 +13,17 @@
 {%         endif %}
 {%     endif %}
 {% endfor %}
+{% if bgp_mesh_pes is arista.avd.defined(true) %}
+{%     set overlay_data.mpls_mesh_pes = {} %}
+{%     for fabric_switch in groups[fabric_name] if fabric_switch not in overlay_data.mpls_route_servers | arista.avd.natural_sort %}
+{%         if fabric_switch != inventory_hostname %}
+{%             set overlay_pe_vars = hostvars[fabric_switch] %}
+{%             if overlay_pe_vars.switch.overlay_role is arista.avd.defined('client') %}
+{%                 set peer_pe = namespace() %}
+{%                 set peer_pe.bgp_as = overlay_pe_vars.switch.bgp_as %}
+{%                 set peer_pe.ip_address = overlay_pe_vars.switch.router_id %}
+{%                 do overlay_data.mpls_mesh_pes.update({ fabric_switch: peer_pe }) %}
+{%             endif %}
+{%         endif %}
+{%     endfor %}
+{% endif %}
