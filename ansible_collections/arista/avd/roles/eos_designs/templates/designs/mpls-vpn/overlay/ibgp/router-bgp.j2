@@ -54,6 +54,17 @@ router_bgp:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
         activate: true
 
+  address_family_vpn_ipv6:
+    neighbor_default_encapsulation:
+      mpls: true
+{% if switch.overlay_role == "client" %}
+      next_hop_self:
+        source_interface: Loopback0
+{% endif %}
+    peer_groups:
+      {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
+        activate: true
+
 {% if evpn_overlay_bgp_rtc is arista.avd.defined(true) %}
   address_family_rtc:
     peer_groups:

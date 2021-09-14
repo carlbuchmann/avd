@@ -15,7 +15,6 @@
 {%                 set link.peer_type = fabric_switch_vars.type %}
 {%                 set link.peer_bgp_as = fabric_switch_vars.switch.bgp_as | arista.avd.default() %}
 {%                 set link.type = fabric_switch_link.type | arista.avd.default() %}
-{%                 set link.speed = fabric_switch_link.speed | arista.avd.default() %}
 {# {%                 set link.ip_address = fabric_switch_link.peer_ip_address | arista.avd.default() %} #}
 {# {%                 set link.ip_address = "unnumbered Loopback0" %} #}
 {# {%                 set link.ip_address = underlay_data.links. %} #}
@@ -32,6 +31,7 @@
 {%                 set link.ipv6_enable = fabric_switch_link.ipv6_enable | arista.avd.default() %}
 {%                 set interface = fabric_switch_link.peer_interface %}
 {%                 set link.ip_address = topology.links[interface].ip_address | arista.avd.default("unnumbered Loopback0") %}
+{%                 set link.speed = topology.links[interface].speed | arista.avd.default() %}
 {%                 do underlay_data.links.update({interface: link}) %}
 {%             endif %}
 {%         endfor %}

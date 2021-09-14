@@ -13,9 +13,7 @@ topology:
       peer: {{ uplink_switch }}
       peer_interface: {{ backbone_interface.uplink_switch_interface | arista.avd.default("") }}
       type: underlay_p2p
-{%         if switch.uplink_interface_speed is arista.avd.defined %}
-      speed: {{ switch.uplink_interface_speed }}
-{%         endif %}
+      speed: {{ backbone_interface.speed | arista.avd.default(switch_data.combined.backbone_interface_speed, none) }}
 {%         if switch.uplink_bfd is arista.avd.defined(true) %}
       bfd: true
 {%         endif %}
