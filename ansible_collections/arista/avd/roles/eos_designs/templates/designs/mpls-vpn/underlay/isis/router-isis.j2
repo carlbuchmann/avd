@@ -14,7 +14,7 @@ router_isis:
 {% if switch.mlag_l3 is arista.avd.defined(true) %}
     - Vlan{{ switch.mlag_peer_l3_vlan }}
 {% endif %}
-  is_type: level-2
+  is_type: {{ switch.is_type }}
 {% if isis_advertise_passive_only is arista.avd.defined(true) %}
   advertise_passive_only: true
 {% endif %}

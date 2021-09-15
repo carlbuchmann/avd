@@ -17,7 +17,7 @@ loopback_interfaces:
 {%         if label_distribution.protocol is arista.avd.defined("isis-sr") %}
 {# Put node-segment stuff here #}
     node_segment:
-      index: {{ switch.id }}
+      index: {{ switch.node_sid }}
       ipv4: true
       ipv6: true
 {%         elif label_distribution.protocol is arista.avd.defined("ldp")%}
