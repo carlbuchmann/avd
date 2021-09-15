@@ -20,7 +20,7 @@ loopback_interfaces:
       index: {{ switch.node_sid }}
       ipv4: true
       ipv6: true
-{%         elif label_distribution.protocol is arista.avd.defined("ldp")%}
+{%         elif label_distribution.protocol is arista.avd.defined("ldp") %}
       ldp:
         interface: true
 {%         endif %}
