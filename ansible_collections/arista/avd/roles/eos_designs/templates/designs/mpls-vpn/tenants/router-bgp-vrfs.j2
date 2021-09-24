@@ -72,6 +72,17 @@
         - static
 {%                 endif %}
 {%             endif %}
+{%             if tenants[tenant].vrfs[vrf].ospf is arista.avd.defined %}
+{%                 if tenants[tenant].vrfs[vrf].redistribute_ospf is not arista.avd.defined %}
+{%                     if tenants[tenant].vrfs[vrf].ospf.nodes is not arista.avd.defined %}
+        - ospf
+{%                     elif inventory_hostname in tenants[tenant].vrfs[vrf].ospf.nodes %}
+        - ospf
+{%                     endif %}
+{%                 elif tenants[tenant].vrfs[vrf].redistribute_ospf is arista.avd.defined(true) %}
+        - ospf
+{%                 endif %}
+{%             endif %}
       address_families:
 {%             if bgp_vrf.address_family_ipv4_neighbors | length > 0 %}
         ipv4:
