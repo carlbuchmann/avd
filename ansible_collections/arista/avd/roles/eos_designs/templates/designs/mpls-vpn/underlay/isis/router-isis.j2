@@ -31,9 +31,9 @@ router_isis:
   isis_af_defaults:
     - maximum-paths {{ isis_maximum_paths }}
 {% if isis_ti_lfa.protection is arista.avd.defined("link") %}
-    - fast-reroute ti-lfa mode link-protection {{ switch.is_type | arista.avd.default(isis_default_is_type, "level-1-2") }}
+    - fast-reroute ti-lfa mode link-protection
 {% elif isis_ti_lfa.protection is arista.avd.defined("node") %}
-    - fast-reroute ti-lfa mode node-protection {{ switch.is_type | arista.avd.default(isis_default_is_type, "level-1-2") }}
+    - fast-reroute ti-lfa mode node-protection
 {% endif %}
 {# If label_distribution.protocol is set to isis-sr we also configure that #}
 {% if label_distribution.protocol is arista.avd.defined("isis-sr") %}

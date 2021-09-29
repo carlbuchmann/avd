@@ -2607,6 +2607,12 @@ router_isis:
   net: < CLNS Address to run ISIS | format 49.0001.0001.0000.0001.00 >
   router_id: < IPv4_address >
   log_adjacency_changes: < true | false >
+  mpls_ldp_sync_default: < true | false >
+  timers:
+    local_convergence:
+      protected_prefixes: < true | false >
+      delay: < integer (Optional) >
+  advertise_passive_only: < true | false >
   no_passive_interfaces: < List no-passive-interface >
   is_type: < level-1 | level-1-2 | level-2 >
   address_family: < List of Address Families >
