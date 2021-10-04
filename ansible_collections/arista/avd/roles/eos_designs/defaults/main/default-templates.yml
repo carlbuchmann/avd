@@ -67,6 +67,8 @@ default_templates:
       - template: "base/main.j2"
     # #   # Underlay feature - FIXED
       - template: "designs/mpls-vpn/underlay/main.j2"
+    # Backbone Interfaces
+      - template: "backbone_interfaces/main.j2"
     # #   # Overlay feature - FIXED
       - template: "designs/mpls-vpn/overlay/main.j2"
     # #   # L3 Edge feature - FIXED/NO ACTION

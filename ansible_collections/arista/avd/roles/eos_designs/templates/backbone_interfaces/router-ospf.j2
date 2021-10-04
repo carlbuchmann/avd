@@ -1,7 +1,7 @@
-{% if l3_edge_data.ospf_interfaces | length > 0 %}
+{% if backbone_interfaces_data.ospf_interfaces | length > 0 %}
 router_isis:
   no_passive_interfaces:
-{%     for ospf_interface in l3_edge_data.ospf_interfaces | arista.avd.natural_sort %}
+{%     for ospf_interface in backbone_interfaces_data.ospf_interfaces | arista.avd.natural_sort %}
         - {{ ospf_interface }}
 {%     endfor %}
 {% endif %}

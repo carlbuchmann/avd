@@ -65,7 +65,7 @@
 {%         set p2p_interface.description = "P2P_LINK_TO_" ~ p2p_interface.peer ~ "_" ~ p2p_interface.peer_interface %}
 {%         do backbone_interfaces_data.p2p_interfaces.update({ node_interface: p2p_interface }) %}
 {%         if p2p_link.include_in_underlay_protocol | arista.avd.default(
-              p2p_profile.include_in_underlay_protocol) is arista.avd.defined(true) %}
+              p2p_profile.include_in_underlay_protocol, true) is arista.avd.defined(true) %}
 {# Include in underlay routing. Build routing data #}
 {%             if switch.underlay_routing_protocol in ["ebgp","ibgp"] %}
 {%                 set as = p2p_link.as | arista.avd.default(
