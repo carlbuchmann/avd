@@ -1,7 +1,7 @@
   vpws:
 {% for tenant in switch.tenants | arista.avd.natural_sort %}
 {%     if tenants[tenant].l1_services is arista.avd.defined and tenants[tenant].pw_rt_base is arista.avd.defined %}
-    {{ tenant }}:
+    - tenant: {{ tenant }}
 {%         set rt = tenants[tenant].pw_rt_base %}
       rd: "{{ tenants_data.overlay_rd_admin_subfield }}:{{ rt }}"
       route_targets:
