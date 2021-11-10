@@ -64,6 +64,7 @@
 {%         set p2p_interface.type = "routed" %}
 {%         set p2p_interface.shutdown = "false" %}
 {%         set p2p_interface.description = "P2P_LINK_TO_" ~ p2p_interface.peer ~ "_" ~ p2p_interface.peer_interface %}
+{%         set p2p_interface.mpls_ip = true %}
 {%         do backbone_interfaces_data.p2p_interfaces.update({ node_interface: p2p_interface }) %}
 {%         if p2p_link.include_in_underlay_protocol | arista.avd.default(
               p2p_profile.include_in_underlay_protocol, true) is arista.avd.defined(true) %}
@@ -89,6 +90,9 @@
 {%                 set p2p_interface.isis_circuit_type = p2p_link.isis_circuit_type | arista.avd.default(p2p_profile.isis_circuit_type, isis_default_circuit_type, "level-1-2") %}
 {%                 set p2p_interface.isis_network_type = p2p_link.isis_network_type | arista.avd.default(p2p_profile.isis_network_type, "point-to-point") %}
 {%                 do backbone_interfaces_data.isis_interfaces.append(node_interfaces) %}
+{%             endif %}
+{%             if label_distribution.protocol is arista.avd.defined("ldp") %}
+{%                 set p2p_interface.mpls_ldp_interface = true %}
 {%             endif %}
 {%         endif %}
 {%     endif %}
