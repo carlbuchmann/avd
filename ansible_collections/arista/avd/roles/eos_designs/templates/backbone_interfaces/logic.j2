@@ -38,6 +38,7 @@
 {%         endif %}
 {%         set p2p_interface.speed = p2p_link.speed | arista.avd.default(
                                      p2p_profile.speed) %}
+{%         set p2p_interface.ipv6_enable = p2p_link.ipv6_enable | arista.avd.default(p2p_profile.ipv6_enable) %}
 {%         if ip_list is arista.avd.defined %}
 {%             set p2p_interface.ip_address = ip_list[node_index] %}
 {%             set p2p_interface.peer_ip = ip_list[peer_index] | ansible.netcommon.ipaddr("address") %}

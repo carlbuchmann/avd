@@ -16,6 +16,9 @@ ethernet_interfaces:
 {%         if p2p_interface.speed is arista.avd.defined %}
     speed: {{ p2p_interface.speed }}
 {%         endif %}
+{%         if p2p_interface.ipv6_enable is arista.avd.defined(true) %}
+    ipv6_enable: {{ p2p_interface.ipv6_enable }}
+{%         endif %}
 {%         if p2p_interface.qos_profile is arista.avd.defined %}
     service_profile: {{ p2p_interface.qos_profile }}
 {%         endif %}
