@@ -29,11 +29,11 @@ default_node_type_keys:
   "mpls-vpn":
     p:
       type: p
-      default_overlay_role: none
+      default_evpn_role: none
     pe:
       type: pe
       connected_endpoints: true
-      default_overlay_role: client
+      default_evpn_role: client
       network_services:
         l1: true
         l2: true
@@ -41,4 +41,4 @@ default_node_type_keys:
       vtep: true
     rr:
       type: rr
-      default_overlay_role: server
+      default_evpn_role: server

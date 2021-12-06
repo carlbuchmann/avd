@@ -54,10 +54,14 @@ default_templates:
 
   mpls-vpn:
     facts:
+      # Set "switch.*" variables based on node type
+      - template: "facts/node_type/main.j2"
+      # Set general "switch.*" variables
+      - template: "facts/switch/main.j2"
       # Set general "switch.*" variables - FIXED
-      - template: "facts/main.j2"
+      # - template: "facts/main.j2"
       # Set design specific "switch.*" variables - FIXED
-      - template: "designs/mpls-vpn/facts/switch/main.j2"
+      # - template: "designs/mpls-vpn/facts/switch/main.j2"
     topology_facts:
       # Set design specific "topology.*" variables - FIXED
       - template: "designs/mpls-vpn/facts/topology/main.j2"
@@ -85,9 +89,16 @@ default_templates:
           list_merge: "{{ custom_structured_configuration_list_merge }}"
           strip_empty_keys: false
     ip_addressing:
-      router_id: 'designs/mpls-vpn/ip-addressing/router-id.j2'
-      p2p_uplinks_ip: 'designs/mpls-vpn/ip-addressing/p2p-uplinks-ip.j2'
+      router_id: 'ip_addressing/router-id.j2'
+      p2p_uplinks_ip: 'ip_addressing/p2p-uplinks-ip.j2'
       ipv6_router_id: 'designs/mpls-vpn/ip-addressing/ipv6-router-id.j2'
       # p2p_uplinks_peer_ip: 'designs/l3ls-evpn/ip-addressing/p2p-uplinks-peer-ip.j2'
       # p2p backbone link IP addressing is handled manually or with unnumbered options. No ipmath necessary atm.
       # p2p_backbone_links: 'designs/mpls-vpn/ip-addressing/p2p_backbone_links.j2'
+    interface_descriptions:
+      underlay_ethernet_interfaces: 'interface_descriptions/underlay/ethernet-interfaces.j2'
+      underlay_port_channel_interfaces: 'interface_descriptions/underlay/port-channel-interfaces.j2'
+      connected_endpoints_ethernet_interfaces: 'interface_descriptions/connected_endpoints/ethernet-interfaces.j2'
+      connected_endpoints_port_channel_interfaces: 'interface_descriptions/connected_endpoints/port-channel-interfaces.j2'
+      overlay_loopback_interface: 'interface_descriptions/loopback_interfaces/overlay-loopback.j2'
+      vtep_loopback_interface: 'interface_descriptions/loopback_interfaces/vtep-loopback.j2'

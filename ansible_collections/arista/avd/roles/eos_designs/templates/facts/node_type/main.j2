@@ -26,6 +26,9 @@ switch:
 {# switch.mlag_support #}
   mlag_support: {{ ns.node_type_key_data.mlag_support | arista.avd.default(false) }}
 
+{# switch.network_services_l1 #}
+  network_services_l1: {{ ns.node_type_key_data.network_services.l1 | arista.avd.default(false) }}
+
 {# switch.network_services_l2 #}
   network_services_l2: {{ ns.node_type_key_data.network_services.l2 | arista.avd.default(false) }}
 
