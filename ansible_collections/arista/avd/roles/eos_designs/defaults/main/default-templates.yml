@@ -91,7 +91,7 @@ default_templates:
     ip_addressing:
       router_id: 'ip_addressing/router-id.j2'
       p2p_uplinks_ip: 'ip_addressing/p2p-uplinks-ip.j2'
-      ipv6_router_id: 'designs/mpls-vpn/ip-addressing/ipv6-router-id.j2'
+      ipv6_router_id: 'ip_addressing/router-id-ipv6.j2'
       # p2p_uplinks_peer_ip: 'designs/l3ls-evpn/ip-addressing/p2p-uplinks-peer-ip.j2'
       # p2p backbone link IP addressing is handled manually or with unnumbered options. No ipmath necessary atm.
       # p2p_backbone_links: 'designs/mpls-vpn/ip-addressing/p2p_backbone_links.j2'

@@ -40,7 +40,8 @@ switch:
 
 {# Network services related facts #}
 {% if switch.network_services_l2 is arista.avd.defined(true) or
-      switch.network_services_l3 is arista.avd.defined(true) %}
+      switch.network_services_l3 is arista.avd.defined(true) or
+      switch.network_services_l1 is arista.avd.defined(true) %}
 
 {# switch.filter_tenants #}
 {%     set switch_filter_tenants = switch_data.combined.filter.tenants | arista.avd.default(['all']) %}
@@ -143,9 +144,37 @@ switch:
 {# switch.router_id #}
   router_id: {% include switch.ip_addressing.router_id %}
 
+{%     if switch_data.combined.loopback_ipv6_pool is arista.avd.defined(fail_action='error',var_name='loopback_ipv6_pool') %}
+{# IPv6 related facts #}
+{# switch.loopback_ipv6_pool #}
+{%         set loopback_ipv6_pool = switch_data.combined.loopback_ipv6_pool | arista.avd.default() %}
+  loopback_ipv6_pool: {{ loopback_ipv4_pool }}
+
+{# switch.loopback_ipv4_offset #}
+{%         set loopback_ipv6_offset = switch_data.combined.loopback_ipv6_offset | arista.avd.default(0) %}
+  loopback_ipv6_offset: {{ loopback_ipv6_offset }}
+
+{# switch.loopback_ipv4_description #}
+  loopback_ipv6_description: {{ switch_data.combined.loopback_ipv6_description | arista.avd.default(overlay_loopback_description) }}
+
+{# switch.ipv6_router_id #}
+  ipv6_router_id: {% include switch.ip_addressing.ipv6_router_id %}
+{%     endif %}
+
+{# switch.evpn_role #}
+{%     set switch_evpn_role = switch_data.combined.evpn_role | arista.avd.default(
+                          switch.default_evpn_role) %}
+  evpn_role: {{ switch_evpn_role }}
+
 {# switch.bgp_as #}
 {%     if bgp_as is arista.avd.defined and switch_overlay_routing_protocol == 'ibgp' %}
+{%         if design.type == "mpls-vpn" %}
+{%              if switch_evpn_role == "client" or switch_evpn_role == "server" %}
   bgp_as: "{{ bgp_as }}"
+{%              endif %}
+{%         else %}
+  bgp_as: "{{ bgp_as }}"
+{%         endif %}
 {%     else %}
 {%         if switch_data.combined.bgp_as is arista.avd.defined(fail_action='error', var_name='bgp_as') %}
   bgp_as: "{{ switch_data.combined.bgp_as }}"
@@ -155,23 +184,42 @@ switch:
 {# switch.bgp_defaults #}
   bgp_defaults: {{ switch_data.combined.bgp_defaults | arista.avd.default([]) }}
 
-{# switch.evpn_role #}
-{%     set switch_evpn_role = switch_data.combined.evpn_role | arista.avd.default(
-                          switch.default_evpn_role) %}
-  evpn_role: {{ switch_evpn_role }}
-
 {# switch.evpn_route_servers #}
 {# For clients the default value for EVPN Route Servers is content of the uplink_switches variable set above. #}
-{%     if switch_evpn_role == "client" %}
+{%     if switch_evpn_role == "client" and design.type == "mpls-vpn" %}
+  mpls_route_reflectors: {{ switch_data.combined.mpls_route_reflectors | arista.avd.default() }}
+{%     elif switch_evpn_role == "client" %}
   evpn_route_servers: {{ switch_data.combined.evpn_route_servers | arista.avd.default(
                          switch_uplink_switches) }}
 {%     else %}
+{%         if design.type == "mpls-vpn" %}
+  mpls_route_reflectors: {{ switch_data.combined.mpls_route_reflectors | arista.avd.default() }}
+{%         else %}
   evpn_route_servers: {{ switch_data.combined.evpn_route_servers | arista.avd.default() }}
+{%         endif %}
+{%     endif %}
+{%     if design.type == "mpls-vpn" and switch_evpn_role == "server" %}
+  bgp_cluster_id: {{ switch_data.combined.bgp_cluster_id | arista.avd.default() }}
 {%     endif %}
 
 {# switch.isis_net #}
 {%     if switch_data.combined.isis_system_id_prefix is arista.avd.defined %}
   isis_net: {{ isis_area_id }}.{{ switch_data.combined.isis_system_id_prefix }}.{{ '%04d' | format(switch_id) }}.00
+{%     endif %}
+
+{# switch.is_type #}
+{%     if switch_data.combined.is_type is arista.avd.defined and switch_data.combined.is_type in ["level-1", "level-2", "level-1-2"] %}
+{%         set switch_is_type = switch_data.combined.is_type %}
+{%     elif isis_default_is_type is arista.avd.defined and isis_default_is_type in ["level-1", "level-2", "level-1-2"] %}
+{%         set switch_is_type = isis_default_is_type %}
+{%     else %}
+{%         set switch_is_type = "level-1-2" %}
+{%     endif %}
+  is_type: {{ switch_is_type }}
+
+{# switch.node_sid #}
+{%     if label_distribution.protocol is arista.avd.defined("isis-sr") %}
+  node_sid: {{ switch_id + (switch_data.combined.node_sid_base | arista.avd.default(0)) | int }}
 {%     endif %}
 {% endif %}
 
@@ -291,7 +339,7 @@ switch:
 
 {########################}
 {# VTEP related facts   #}
-{% if switch.vtep is arista.avd.defined(true) and
+{% if switch.vtep is arista.avd.defined(true) and design.type is not arista.avd.defined("mpls-vpn") and
       switch_data.combined.vtep_loopback_ipv4_pool is arista.avd.defined(fail_action='error',var_name='vtep_loopback_ipv4_pool') %}
 
 {# switch.vtep_loopback_ipv4_pool #}
@@ -309,6 +357,11 @@ switch:
 {%     endif %}
 
 {# switch.evpn_services_l2_only #}
+  evpn_services_l2_only: {{ switch_data.combined.evpn_services_l2_only | arista.avd.default(false) }}
+
+{% endif %}
+
+{% if switch.vtep is arista.avd.defined(true) and design.type == "mpls-vpn" %}
   evpn_services_l2_only: {{ switch_data.combined.evpn_services_l2_only | arista.avd.default(false) }}
 
 {% endif %}
@@ -338,10 +391,12 @@ switch:
 
 
 {% if switch.network_services_l2 is arista.avd.defined(true) or
-      switch.network_services_l3 is arista.avd.defined(true) %}
+      switch.network_services_l3 is arista.avd.defined(true) or
+      switch.network_services_l1 is arista.avd.defined(true) %}
 {%     set leaf = namespace() %}
 {%     set leaf.vlans = []  %}
 {%     set leaf.tenants = {} %}
+{%     set leaf.pseudowires = [] %}
 {%     for tenant in tenants | arista.avd.natural_sort if tenant in switch_filter_tenants or "all" in switch_filter_tenants %}
 {%         set add_vrfs = {} %}
 {%         for vrf in tenants[tenant].vrfs | arista.avd.natural_sort %}

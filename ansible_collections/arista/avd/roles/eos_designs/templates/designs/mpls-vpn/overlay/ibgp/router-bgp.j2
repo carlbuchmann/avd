@@ -1,6 +1,6 @@
 router_bgp:
 
-{% if switch.overlay_role == "server" %}
+{% if switch.evpn_role == "server" %}
   bgp_cluster_id: {{ switch.bgp_cluster_id | arista.avd.default(switch.router_id) }}
 {% endif %}
 
@@ -13,7 +13,7 @@ router_bgp:
       password: "{{ bgp_peer_groups.MPLS_OVERLAY_PEERS.password }}"
       send_community: all
       maximum_routes: 0
-{% if switch.overlay_role == "server" %}
+{% if switch.evpn_role == "server" %}
       route_reflector_client: true
 {% endif %}
 
@@ -23,11 +23,10 @@ router_bgp:
         activate: false
 
   address_family_evpn:
-    neighbor_default_encapsulation:
-      mpls: true
-{% if switch.overlay_role == "client" %}
-      next_hop_self:
-        source_interface: Loopback0
+    neighbor_default:
+      encapsulation: mpls
+{% if switch.evpn_role == "client" %}
+      next_hop_self_source_interface: Loopback0
 {% endif %}
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
@@ -44,22 +43,18 @@ router_bgp:
 {% endif %}
 
   address_family_vpn_ipv4:
-    neighbor_default_encapsulation:
-      mpls: true
-{% if switch.overlay_role == "client" %}
-      next_hop_self:
-        source_interface: Loopback0
+{% if switch.evpn_role == "client" %}
+    neighbor_default_encapsulation_mpls_next_hop_self:
+      source_interface: Loopback0
 {% endif %}
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
         activate: true
 
   address_family_vpn_ipv6:
-    neighbor_default_encapsulation:
-      mpls: true
-{% if switch.overlay_role == "client" %}
-      next_hop_self:
-        source_interface: Loopback0
+{% if switch.evpn_role == "client" %}
+    neighbor_default_encapsulation_mpls_next_hop_self:
+      source_interface: Loopback0
 {% endif %}
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
@@ -70,7 +65,7 @@ router_bgp:
     peer_groups:
       {{ bgp_peer_groups.MPLS_OVERLAY_PEERS.name | arista.avd.default("MPLS-OVERLAY-PEERS") }}:
         activate: true
-{%     if switch.overlay_role == "server" %}
+{%     if switch.evpn_role == "server" %}
         default_route_target:
           only: true
 {%     endif %}

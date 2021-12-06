@@ -17,7 +17,7 @@
 
 {%     endif %}
 {# Only run overlay templates for clients (pes) #}
-{%     if switch.overlay_role is arista.avd.defined("client") %}
+{%     if switch.evpn_role is arista.avd.defined("client") %}
 {# {%         include 'designs/mpls-vpn/tenants/vxlan-interface.j2' %} #}
 
 {%         include 'designs/mpls-vpn/tenants/router-bgp.j2' %}
