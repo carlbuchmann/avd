@@ -64,7 +64,9 @@ default_templates:
       # - template: "designs/mpls-vpn/facts/switch/main.j2"
     topology_facts:
       # Set design specific "topology.*" variables - FIXED
-      - template: "designs/mpls-vpn/facts/topology/main.j2"
+      # - template: "designs/mpls-vpn/facts/topology/main.j2"
+      # Set design specific "topology.*" variables - FIXED
+      - template: "facts/topology/main.j2"
     structured_config:
     # #   # Render Strucured Configuration
     # #   # Base features - FIXED

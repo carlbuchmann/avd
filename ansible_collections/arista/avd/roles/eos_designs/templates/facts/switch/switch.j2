@@ -435,8 +435,14 @@ switch:
 {%                 endif %}
 {%             endfor %}
 {%         endfor %}
-{%         if add_vrfs | length > 0 or add_l2vlans | length > 0 %}
-{%             do leaf.tenants.update({ tenant: {"vrfs": add_vrfs, "l2vlans": add_l2vlans}}) %}
+{%         set add_l1services = [] %}
+{%         for l1_service in tenants[tenant].l1_services | arista.avd.natural_sort %}
+{%             if inventory_hostname in l1_service.nodes %}
+{%                 do add_l1services.append(l1_service) %}
+{%             endif %}
+{%         endfor %}
+{%         if add_vrfs | length > 0 or add_l2vlans | length > 0 or add_l1services | length > 0 %}
+{%             do leaf.tenants.update({ tenant: {"vrfs": add_vrfs, "l2vlans": add_l2vlans, "l1_services": add_l1services}}) %}
 {%         endif %}
 {%     endfor %}
 
