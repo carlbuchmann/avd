@@ -76,8 +76,9 @@ ethernet_interfaces:
 {%                     endif %}
   {{ l1_service.interfaces[loop.index0] }}:
 {%                     if l1_service_subif_id is arista.avd.defined %}
-    type: l3dot1q
-    encapsulation_dot1q_vlan: {{ l1_service_subif_id }}
+    type: l2dot1q
+    encapsulation_vlan:
+      client_dot1q: {{ l1_service_subif_id }}
 {%                     else %}
     type: routed
 {%                     endif %}

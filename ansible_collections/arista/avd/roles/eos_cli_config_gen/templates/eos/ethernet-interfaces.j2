@@ -43,6 +43,9 @@ interface {{ ethernet_interface }}
    no switchport
 {%         elif ethernet_interfaces[ethernet_interface].type is arista.avd.defined('l3dot1q') and ethernet_interfaces[ethernet_interface].encapsulation_dot1q_vlan is arista.avd.defined() %}
    encapsulation dot1q vlan {{ ethernet_interfaces[ethernet_interface].encapsulation_dot1q_vlan }}
+{%         elif ethernet_interfaces[ethernet_interface].type is arista.avd.defined('l2dot1q') and ethernet_interfaces[ethernet_interface].encapsulation_vlan.client_dot1q is arista.avd.defined() %}
+   encapsulation vlan
+     client dot1q {{ ethernet_interfaces[ethernet_interface].encapsulation_vlan.client_dot1q }}
 {%         else %}
    switchport
 {%         endif %}
