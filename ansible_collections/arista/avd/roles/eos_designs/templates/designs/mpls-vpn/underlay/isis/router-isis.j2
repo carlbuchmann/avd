@@ -27,7 +27,7 @@ router_isis:
       delay: {{ isis_ti_lfa.local_convergence_delay | arista.avd.default("10000") }}
       protected_prefixes: true
 {% endif %}
-  address_family: ['ipv4 unicast', 'ipv6 unicast']
+  address_family: ['ipv4 unicast']
   isis_af_defaults:
     - maximum-paths {{ isis_maximum_paths }}
 {% if isis_ti_lfa.protection is arista.avd.defined("link") %}

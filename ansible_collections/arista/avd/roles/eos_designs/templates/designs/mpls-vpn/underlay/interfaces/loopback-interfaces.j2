@@ -5,7 +5,7 @@ loopback_interfaces:
     description: Overlay_Peering
     shutdown: false
     ip_address: {{ switch.router_id }}/32
-    ipv6_address: {{ switch.ipv6_router_id }}/128
+{# ipv6_address: {{ switch.ipv6_router_id }}/128 #}
 {%     if switch.underlay_routing_protocol == "ospf" %}
     ospf_area: {{ underlay_ospf_area }}
 {%     endif %}
@@ -19,7 +19,7 @@ loopback_interfaces:
     node_segment:
       index: {{ switch.node_sid }}
       ipv4: true
-      ipv6: true
+{# ipv6: true #}
 {%         elif label_distribution.protocol is arista.avd.defined("ldp") %}
       ldp:
         interface: true

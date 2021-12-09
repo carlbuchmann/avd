@@ -99,8 +99,8 @@ switch:
   loopback_ipv4_pool: {{ loopback_ipv4_pool }}
 
 {# switch.loopback_ipv6_pool #}
-{%     set loopback_ipv6_pool = switch_data.combined.loopback_ipv6_pool | arista.avd.default() %}
-  loopback_ipv6_pool: {{ loopback_ipv6_pool }}
+{# {%     set loopback_ipv6_pool = switch_data.combined.loopback_ipv6_pool | arista.avd.default() %}
+  loopback_ipv6_pool: {{ loopback_ipv6_pool }} #}
 
 {# switch.loopback_ipv4_offset #}
 {%     set loopback_ipv4_offset = switch_data.combined.loopback_ipv4_offset | arista.avd.default(0) %}

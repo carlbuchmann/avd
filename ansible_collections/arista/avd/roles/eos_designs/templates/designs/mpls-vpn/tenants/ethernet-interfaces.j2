@@ -82,9 +82,9 @@ ethernet_interfaces:
 {%                     else %}
     type: routed
 {%                     endif %}
-    lldp:
+{#    lldp:
       transmit: false
-      receive: false
+      receive: false #}
     peer_type: l3_interface
     shutdown: false
 {%                 endif %}

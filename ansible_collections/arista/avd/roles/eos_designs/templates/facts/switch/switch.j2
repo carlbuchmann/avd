@@ -144,7 +144,7 @@ switch:
 {# switch.router_id #}
   router_id: {% include switch.ip_addressing.router_id %}
 
-{%     if switch_data.combined.loopback_ipv6_pool is arista.avd.defined(fail_action='error',var_name='loopback_ipv6_pool') %}
+{%     if switch_data.combined.loopback_ipv6_pool is arista.avd.defined %}
 {# IPv6 related facts #}
 {# switch.loopback_ipv6_pool #}
 {%         set loopback_ipv6_pool = switch_data.combined.loopback_ipv6_pool | arista.avd.default() %}
