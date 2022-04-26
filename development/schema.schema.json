@@ -112,7 +112,7 @@
                             "items": {
                                 "type": "string",
                                 "$comment": "The regex here matches valid key names",
-                                "pattern": "^[a-z][a-z0-9_]+$",
+                                "pattern": "^[a-z][a-z0-9_]*$",
                                 "description": "Name of keys that must have unique values within a list of dicts"
                             }
                         }
@@ -128,10 +128,10 @@
                         },
                         "keys": {
                             "type": "object",
-                            "description": "Schema for dictionary keys",
+                            "description": "Dictionary of of dictionary-keys. Keys must use snake_case.",
                             "$comment": "Recursive reference to allow infinite nested data models",
                             "patternProperties": {
-                                "^[a-z][a-z0-9_]+$": {
+                                "^[a-z][a-z0-9_]*$": {
                                     "$comment": "The regex here matches valid key names",
                                     "$ref": "#/$def/avd_schema_var"
                                 }
@@ -165,7 +165,7 @@
     "type": "object",
     "additionalProperties": false,
     "patternProperties": {
-        "^[a-z][a-z0-9_]+$": {
+        "^[a-z][a-z0-9_]*$": {
             "$comment": "The regex here matches valid key names",
             "$ref": "#/$def/avd_schema_var"
         }
