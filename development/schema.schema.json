@@ -1,0 +1,173 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "$id": "https://avd.sh/development/schema-schema.json",
+    "$def": {
+        "avd_schema_var": {
+            "type": "object",
+            "oneOf": [
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "required": true,
+                            "enum": [
+                                "int"
+                            ]
+                        },
+                        "max": {
+                            "type": "number"
+                        },
+                        "min": {
+                            "type": "number"
+                        },
+                        "valid_values": {
+                            "type": "array",
+                            "description": "List of valid values",
+                            "items": {
+                                "type": "number"
+                            }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "required": true,
+                            "enum": [
+                                "bool"
+                            ]
+                        },
+                        "valid_values": {
+                            "type": "array",
+                            "description": "List of valid values",
+                            "items": {
+                                "type": "boolean"
+                            }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "required": true,
+                            "enum": [
+                                "str"
+                            ]
+                        },
+                        "format": {
+                            "type": "string",
+                            "enum": [
+                                "ipv4",
+                                "ipv4_cidr",
+                                "ipv6",
+                                "ipv6_cidr",
+                                "ip",
+                                "cidr",
+                                "mac"
+                            ]
+                        },
+                        "max_length": {
+                            "type": "number"
+                        },
+                        "min_length": {
+                            "type": "number"
+                        },
+                        "pattern": {
+                            "type": "string",
+                            "format": "regex",
+                            "description": "A regular expression, which should be valid according to the ECMA 262 dialect"
+                        },
+                        "valid_values": {
+                            "type": "array",
+                            "description": "List of valid values",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "list"
+                            ]
+                        },
+                        "items": {
+                            "description": "Schema for list items",
+                            "$comment": "Recursive reference to allow infinite nested data models",
+                            "$ref": "#/$def/avd_schema_var"
+                        },
+                        "min_length": {
+                            "type": "number"
+                        },
+                        "max_length": {
+                            "type": "number"
+                        },
+                        "unique_keys": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "$comment": "The regex here matches valid key names",
+                                "pattern": "^[a-z][a-z0-9_]+$",
+                                "description": "Name of keys that must have unique values within a list of dicts"
+                            }
+                        }
+                    }
+                },
+                {
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": [
+                                "dict"
+                            ]
+                        },
+                        "keys": {
+                            "type": "object",
+                            "description": "Schema for dictionary keys",
+                            "$comment": "Recursive reference to allow infinite nested data models",
+                            "patternProperties": {
+                                "^[a-z][a-z0-9_]+$": {
+                                    "$comment": "The regex here matches valid key names",
+                                    "$ref": "#/$def/avd_schema_var"
+                                }
+                            }
+                        }
+                    }
+                }
+            ],
+            "properties": {
+                "display_name": {
+                    "type": "string",
+                    "$comment": "The regex here rejects new-lines",
+                    "pattern": "^[^\n]+$",
+                    "description": "Free text display name for forms and documentation (single line)"
+                },
+                "description": {
+                    "type": "string",
+                    "minLength": "1",
+                    "description": "Free text description for forms and documentation (multi line)"
+                },
+
+                "required": {
+                    "type": "boolean",
+                    "description": "Set if variable is required"
+                }
+            },
+            "required": [ "type" ]
+        }
+    },
+    "title": "Arista AVD Schema",
+    "type": "object",
+    "additionalProperties": false,
+    "patternProperties": {
+        "^[a-z][a-z0-9_]+$": {
+            "$comment": "The regex here matches valid key names",
+            "$ref": "#/$def/avd_schema_var"
+        }
+    }
+}
