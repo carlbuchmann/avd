@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../../../../development/schema.schema.json
+# Line above is used by RedHat's YAML Schema vscode extension
+# Use Ctrl + Space to get suggestions for every field. Autocomplete will pop up after typing 2 letters.
+evpn_vlan_aware_bundles:
+  display_name: EVPN VLAN-Aware Bundles
+  description: Enable vlan aware bundles for EVPN MAC-VRF
+  type: bool
+  default: false

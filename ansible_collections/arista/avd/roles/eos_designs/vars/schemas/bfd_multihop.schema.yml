@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=../../../../../../../development/schema.schema.json
+# Line above is used by RedHat's YAML Schema vscode extension
+# Use Ctrl + Space to get suggestions for every field. Autocomplete will pop up after typing 2 letters.
+bfd_multihop:
+  display_name: BFD Multihop tunning
+  type: dict
+  keys:
+    interval:
+      type: int
+      default: 300
+    min_rx:
+      type: int
+      default: 300
+    multiplier:
+      type: int
+      default: 3

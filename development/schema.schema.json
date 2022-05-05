@@ -14,6 +14,10 @@
                                 "int"
                             ]
                         },
+                        "default": {
+                            "description": "Default value",
+                            "type": "number"
+                        },
                         "max": {
                             "type": "number"
                         },
@@ -38,6 +42,10 @@
                                 "bool"
                             ]
                         },
+                        "default": {
+                            "description": "Default value",
+                            "type": "boolean"
+                        },
                         "valid_values": {
                             "type": "array",
                             "description": "List of valid values",
@@ -55,6 +63,14 @@
                             "enum": [
                                 "str"
                             ]
+                        },
+                        "case_sensitive": {
+                            "type": "boolean",
+                            "default": true
+                        },
+                        "default": {
+                            "description": "Default value",
+                            "type": "string"
                         },
                         "format": {
                             "type": "string",
@@ -77,7 +93,8 @@
                         "pattern": {
                             "type": "string",
                             "format": "regex",
-                            "description": "A regular expression, which should be valid according to the ECMA 262 dialect"
+                            "description": "A regular expression, which should be valid according to the ECMA 262 dialect\nRemember to use double escapes"
+
                         },
                         "valid_values": {
                             "type": "array",
@@ -95,6 +112,10 @@
                             "enum": [
                                 "list"
                             ]
+                        },
+                        "default": {
+                            "description": "Default value",
+                            "type": "array"
                         },
                         "items": {
                             "description": "Schema for list items",
@@ -126,6 +147,10 @@
                                 "dict"
                             ]
                         },
+                        "default": {
+                            "description": "Default value",
+                            "type": "object"
+                        },
                         "keys": {
                             "type": "object",
                             "description": "Dictionary of of dictionary-keys. Keys must use snake_case.",
@@ -152,7 +177,6 @@
                     "minLength": "1",
                     "description": "Free text description for forms and documentation (multi line)"
                 },
-
                 "required": {
                     "type": "boolean",
                     "description": "Set if variable is required"

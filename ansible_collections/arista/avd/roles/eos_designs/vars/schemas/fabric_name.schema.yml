@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../../../../../../development/schema.schema.json
+# Line above is used by RedHat's YAML Schema vscode extension
+# Use Ctrl + Space to get suggestions for every field. Autocomplete will pop up after typing 2 letters.
+fabric_name:
+  display_name: Fabric Name
+  description: Fabric Name, required to match Ansible Group name covering all devices in the Fabric
+  type: str
+  required: true

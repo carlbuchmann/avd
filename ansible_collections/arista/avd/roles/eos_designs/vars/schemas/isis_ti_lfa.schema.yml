@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=../../../../../../../development/schema.schema.json
+# Line above is used by RedHat's YAML Schema vscode extension
+# Use Ctrl + Space to get suggestions for every field. Autocomplete will pop up after typing 2 letters.
+isis_ti_lfa:
+  display_name: ISIS TI-LFA
+  type: dict
+  keys:
+    enabled:
+      type: bool
+      default: false
+    protection:
+      type: str
+      valid_values:
+        - link
+        - node
+    local_convergence_delay:
+      description: Local convergence delay in mpls
+      type: int
+      default: 10000

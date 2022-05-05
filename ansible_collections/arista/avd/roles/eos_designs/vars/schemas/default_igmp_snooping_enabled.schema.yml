@@ -1,0 +1,10 @@
+# yaml-language-server: $schema=../../../../../../../development/schema.schema.json
+# Line above is used by RedHat's YAML Schema vscode extension
+# Use Ctrl + Space to get suggestions for every field. Autocomplete will pop up after typing 2 letters.
+default_igmp_snooping_enabled:
+  display_name: Default IGMP Snooping enabled
+  description: |
+    Disable IGMP snooping at fabric level.
+    If set, it overrides per vlan settings
+  type: bool
+  default: true
