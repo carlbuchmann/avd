@@ -554,11 +554,11 @@ templates:
 
 The `arista.avd.eos_designs_facts` module is an Ansible Action Plugin providing the following capabilities:
 
-- Set `avd_switch_facts` fact containing both `switch` facts per host.
-- Set `avd_topology_peers` fact containing list of downlink switches per host.
-  This list is built based on the `uplink_switches` from all other hosts.
-- Set `avd_overlay_peers` fact containing list of EVPN or MPLS overlay peers per host.
-  This list is built based on the `evpn_route_servers` and `mpls_route_reflectors` from all other hosts.
+- Set `avd_switch_facts` fact containing both `switch` facts per node.
+- Set `avd_topology_peers` fact containing list of downlink switches per node.
+  This list is built based on the `uplink_switches` from all other nodes.
+- Set `avd_overlay_peers` fact containing list of EVPN or MPLS overlay peers per node.
+  This list is built based on the `evpn_route_servers` and `mpls_route_reflectors` from all other nodes.
 - The plugin is designed to `run_once`. With this, Ansible will set the same facts on all devices,
   so all devices can lookup values of any other device without using the slower `hostvars`.
 - The facts can also be copied to the "root" `switch` in a task run per-device (see example below)
