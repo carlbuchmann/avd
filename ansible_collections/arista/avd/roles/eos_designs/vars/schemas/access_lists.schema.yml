@@ -16,8 +16,7 @@ underlay_routing_protocol:
 
 access_lists:
   type: list
-  unique_keys:
-    - name
+  primary_key: name
   display_name: IP Extended Access-Lists
   description: |
     AVD currently supports 2 different data models for extended ACLs:
@@ -41,8 +40,7 @@ access_lists:
       sequence_numbers:
         type: list
         required: true
-        unique_keys:
-          - sequence
+        primary_key: sequence
         items:
           type: dict
           keys:

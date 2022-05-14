@@ -4,32 +4,22 @@
 type: dict
 allow_other_keys: true
 keys:
-  access_lists:
+  ipv6_standard_access_lists:
     type: list
     primary_key: name
-    display_name: IP Extended Access-Lists
-    description: |
-      AVD currently supports 2 different data models for extended ACLs:
-
-      - The legacy `access_lists` data model, for compatibility with existing deployments
-      - The improved `ip_access_lists` data model, for access to more EOS features
-
-      Both data models can coexists without conflicts, as different keys are used: `access_lists` vs `ip_access_lists`.
-      Access list names must be unique.
-
-      The legacy data model supports simplified ACL definition with `sequence_number` to `action_string` mapping:
+    display_name: IPv6 Standard Access-Lists
     items:
       type: dict
       keys:
         name:
           type: str
           required: true
-          display_name: access_list_name
+          display_name: ipv6_access_list_name
         counters_per_entry:
           type: bool
         sequence_numbers:
-          type: list
           required: true
+          type: list
           primary_key: sequence
           items:
             type: dict

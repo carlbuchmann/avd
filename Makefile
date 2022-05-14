@@ -30,12 +30,12 @@ sanity-info: ## Show information about ansible-test
 .PHONY: sanity-lint
 sanity-lint: ## Run ansible-test sanity for code sanity
 	cd ansible_collections/arista/avd/ ; \
-	ansible-test sanity --requirements --$(ANSIBLE_TEST_MODE) --skip-test import
+	ansible-test sanity --requirements --$(ANSIBLE_TEST_MODE) --skip-test import --python 3.8 --python 3.9 --python 3.10
 
 .PHONY: sanity-import
 sanity-import: ## Run ansible-test sanity for code import
 	cd ansible_collections/arista/avd/ ; \
-	ansible-test sanity --requirements --$(ANSIBLE_TEST_MODE) --test import
+	ansible-test sanity --requirements --$(ANSIBLE_TEST_MODE) --test import --python 3.8 --python 3.9 --python 3.10
 
 .PHONY: galaxy-importer
 galaxy-importer:  ## Run galaxy importer tests
@@ -50,7 +50,7 @@ galaxy-importer:  ## Run galaxy importer tests
 .PHONY: unit-tests
 unit-tests: ## Run unit test cases using ansible-test
 	cd ansible_collections/arista/avd/ ; \
-	ansible-test units --requirements --$(ANSIBLE_TEST_MODE) -vv
+	ansible-test units --requirements --$(ANSIBLE_TEST_MODE) -vv --python 3.8 --python 3.9 --python 3.10
 
 ###################################################
 # Run integration test cases using ansible-test   #
@@ -59,7 +59,7 @@ unit-tests: ## Run unit test cases using ansible-test
 .PHONY: integration-tests
 integration-tests: ## Run integration test cases using ansible-test
 	cd ansible_collections/arista/avd/ ; \
-	ansible-test integration --requirements --$(ANSIBLE_TEST_MODE)
+	ansible-test integration --requirements --$(ANSIBLE_TEST_MODE) --python 3.8 --python 3.9 --python 3.10
 
 #########################################
 # Documentation actions					#

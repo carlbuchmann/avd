@@ -4,12 +4,12 @@
     "$def": {
         "avd_schema_var": {
             "type": "object",
+            "required": [ "type" ],
             "oneOf": [
                 {
                     "properties": {
                         "type": {
                             "type": "string",
-                            "required": true,
                             "enum": [
                                 "int"
                             ]
@@ -30,14 +30,29 @@
                             "items": {
                                 "type": "number"
                             }
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "$comment": "The regex here rejects new-lines",
+                            "pattern": "^[^\n]+$",
+                            "description": "Free text display name for forms and documentation (single line)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Free text description for forms and documentation (multi line)"
+                        },
+                        "required": {
+                            "type": "boolean",
+                            "description": "Key is required"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "properties": {
                         "type": {
                             "type": "string",
-                            "required": true,
                             "enum": [
                                 "bool"
                             ]
@@ -52,14 +67,29 @@
                             "items": {
                                 "type": "boolean"
                             }
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "$comment": "The regex here rejects new-lines",
+                            "pattern": "^[^\n]+$",
+                            "description": "Free text display name for forms and documentation (single line)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Free text description for forms and documentation (multi line)"
+                        },
+                        "required": {
+                            "type": "boolean",
+                            "description": "Key is required"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "properties": {
                         "type": {
                             "type": "string",
-                            "required": true,
                             "enum": [
                                 "str"
                             ]
@@ -102,8 +132,24 @@
                             "items": {
                                 "type": "string"
                             }
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "$comment": "The regex here rejects new-lines",
+                            "pattern": "^[^\n]+$",
+                            "description": "Free text display name for forms and documentation (single line)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Free text description for forms and documentation (multi line)"
+                        },
+                        "required": {
+                            "type": "boolean",
+                            "description": "Key is required"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "properties": {
@@ -128,16 +174,29 @@
                         "max_length": {
                             "type": "number"
                         },
-                        "unique_keys": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "$comment": "The regex here matches valid key names",
-                                "pattern": "^[a-z][a-z0-9_]*$",
-                                "description": "Name of keys that must have unique values within a list of dicts"
-                            }
+                        "primary_key": {
+                            "type": "string",
+                            "$comment": "The regex here matches valid key names",
+                            "pattern": "^[a-z][a-z0-9_]*$",
+                            "description": "Name of a primary key in a list of dicts. The key is implicitly required must have unique values between the list elements"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "$comment": "The regex here rejects new-lines",
+                            "pattern": "^[^\n]+$",
+                            "description": "Free text display name for forms and documentation (single line)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Free text description for forms and documentation (multi line)"
+                        },
+                        "required": {
+                            "type": "boolean",
+                            "description": "Key is required"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 },
                 {
                     "properties": {
@@ -161,37 +220,32 @@
                                     "$ref": "#/$def/avd_schema_var"
                                 }
                             }
+                        },
+                        "allow_other_keys": {
+                            "type": "boolean",
+                            "description": "Allow other keys than the ones defined under 'keys'. Default is False"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "$comment": "The regex here rejects new-lines",
+                            "pattern": "^[^\n]+$",
+                            "description": "Free text display name for forms and documentation (single line)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "minLength": 1,
+                            "description": "Free text description for forms and documentation (multi line)"
+                        },
+                        "required": {
+                            "type": "boolean",
+                            "description": "Key is required"
                         }
-                    }
+                    },
+                    "additionalProperties": false
                 }
-            ],
-            "properties": {
-                "display_name": {
-                    "type": "string",
-                    "$comment": "The regex here rejects new-lines",
-                    "pattern": "^[^\n]+$",
-                    "description": "Free text display name for forms and documentation (single line)"
-                },
-                "description": {
-                    "type": "string",
-                    "minLength": "1",
-                    "description": "Free text description for forms and documentation (multi line)"
-                },
-                "required": {
-                    "type": "boolean",
-                    "description": "Set if variable is required"
-                }
-            },
-            "required": [ "type" ]
+            ]
         }
     },
     "title": "Arista AVD Schema",
-    "type": "object",
-    "additionalProperties": false,
-    "patternProperties": {
-        "^[a-z][a-z0-9_]*$": {
-            "$comment": "The regex here matches valid key names",
-            "$ref": "#/$def/avd_schema_var"
-        }
-    }
+    "$ref": "#/$def/avd_schema_var"
 }

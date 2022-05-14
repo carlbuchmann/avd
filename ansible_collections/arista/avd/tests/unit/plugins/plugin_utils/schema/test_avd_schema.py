@@ -1,0 +1,234 @@
+from __future__ import (absolute_import, division, print_function)
+__metaclass__ = type
+
+from ansible_collections.arista.avd.plugins.plugin_utils.schema.avd_schema import DEFAULT_SCHEMA, AvdSchema, AvdSchemaError, AvdValidationError
+import yaml
+import pytest
+import os
+from deepmerge import always_merger
+
+script_dir = os.path.dirname(__file__)
+with open(f"{script_dir}/../../../../../roles/eos_cli_config_gen/vars/schemas/access_lists.schema.yml", "r", encoding="utf-8") as schema_file:
+    acl_schema = yaml.load(schema_file, Loader=yaml.SafeLoader)
+with open(f"{script_dir}/../../../../../roles/eos_cli_config_gen/vars/schemas/ipv6_standard_access_lists.schema.yml", "r", encoding="utf-8") as schema_file:
+    ipv6_acl_schema = yaml.load(schema_file, Loader=yaml.SafeLoader)
+with open(f"{script_dir}/../../../../../molecule/eos_cli_config_gen_v4.0/inventory/host_vars/acl.yml", "r", encoding="utf-8") as data_file:
+    acl_test_data = yaml.load(data_file, Loader=yaml.SafeLoader)
+with open(f"{script_dir}/../../../../../molecule/eos_cli_config_gen_v4.0/inventory/host_vars/ipv6-access-lists.yml", "r", encoding="utf-8") as data_file:
+    ipv6_acl_test_data = yaml.load(data_file, Loader=yaml.SafeLoader)
+
+INVALID_SCHEMA = {"type": "something_invalid"}
+
+combined_schema = {}
+always_merger.merge(combined_schema, acl_schema)
+always_merger.merge(combined_schema, ipv6_acl_schema)
+
+VALID_TEST_SCHEMAS = [DEFAULT_SCHEMA, acl_schema, ipv6_acl_schema, combined_schema]
+
+combined_data = {}
+always_merger.merge(combined_data, acl_test_data)
+always_merger.merge(combined_data, ipv6_acl_test_data)
+
+TEST_DATA_SETS = [{}, acl_test_data, ipv6_acl_test_data, combined_data]
+
+TEST_DATA_PATHS = [
+    [],
+    ["access_lists", "name"],
+    ["access_lists", "sequence_numbers", "action"],
+]
+
+EXPECTED_SUBSCHEMAS = {
+    "_empty": combined_schema,
+    "access_lists.name":
+        acl_schema['keys']['access_lists']['items']['keys']['name'],
+    "access_lists.sequence_numbers.action":
+        acl_schema['keys']['access_lists']['items']['keys']['sequence_numbers']['items']['keys']['action'],
+}
+
+'''
+Testing invalid data for "access-lists" data model
+- Wrong data type (string instead of dict)
+- Wrong data type (None instead of dict)
+- Wrong type (None instead of list)
+- Wrong item type (None instead of dict)
+- Missing Multiple Required keys ("name", "sequence_numbers")
+- Missing One Required key ("sequence_numbers")
+- Wrong type for deeply nested key (int instead of str)
+- Unexpected key (extra_key)
+- Duplicate primary key values (two sequence:10)
+- Primary key not set on one list item.
+'''
+INVALID_ACL_DATA = [
+    "String",
+    None,
+    {"access_lists": None},
+    {"access_lists": [None]},
+    {"access_lists": [{}]},
+    {"access_lists": [{"name": "name"}]},
+    {"access_lists": [{"name": "name", "sequence_numbers": [{"sequence": 10, "action": 123}]}]},
+    {"access_lists": [{"extra_key": "extra_value", "name": "name", "sequence_numbers": [{"sequence": 10, "action": "permit ip any any"}]}]},
+    {"access_lists": [{"name": "name", "sequence_numbers": [{"sequence": 10, "action": "permit ip any any"}, {"sequence": 10, "action": "deny ip any any"}]}]},
+    {"access_lists": [{"name": "name", "sequence_numbers": [{"sequence": 10, "action": "permit ip any any"}, {"action": "deny ip any any"}]}]},
+]
+
+
+class TestAvdSchema():
+    def test_avd_schema_init_without_schema(self):
+        avdschema = AvdSchema()
+        assert isinstance(avdschema, AvdSchema)
+        assert avdschema._schema == DEFAULT_SCHEMA
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    def test_avd_schema_init_with_schema(self, TEST_SCHEMA):
+        avdschema = AvdSchema(TEST_SCHEMA)
+        assert isinstance(avdschema, AvdSchema)
+        assert avdschema._schema == TEST_SCHEMA
+
+    def test_avd_schema_init_with_invalid_schema(self):
+        with pytest.raises(AvdSchemaError):
+            AvdSchema(INVALID_SCHEMA)
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    def test_avd_schema_validate_schema(self, TEST_SCHEMA):
+        try:
+            AvdSchema().validate_schema(TEST_SCHEMA)
+        except Exception as e:
+            assert False, "AvdSchema().validate_schema(TEST_SCHEMA) raised an exception"
+        assert True
+
+    def test_avd_schema_validate_invalid_schema(self):
+        with pytest.raises(AvdSchemaError):
+            AvdSchema().validate_schema(INVALID_SCHEMA)
+
+    def test_avd_schema_validate_invalid_schema_with_msg(self):
+        with pytest.raises(AvdSchemaError) as e:
+            AvdSchema().validate_schema(INVALID_SCHEMA, msg="Special error message")
+        assert str(e.value) == "Special error message"
+
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_validate_without_schema(self, TEST_DATA):
+        try:
+            AvdSchema().validate(TEST_DATA)
+        except Exception as e:
+            assert False, "AvdSchema().validate(TEST_DATA) raised an exception"
+        assert True
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_validate_with_loaded_schema(self, TEST_SCHEMA, TEST_DATA):
+        try:
+            AvdSchema(TEST_SCHEMA).validate(TEST_DATA)
+        except Exception as e:
+            assert False, "AvdSchema(TEST_SCHEMA).validate(TEST_DATA) raised an exception"
+        assert True
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_validate_with_adhoc_schema(self, TEST_SCHEMA, TEST_DATA):
+        try:
+            AvdSchema().validate(TEST_DATA, TEST_SCHEMA)
+        except Exception as e:
+            assert False, "AvdSchema().validate(TEST_DATA, TEST_SCHEMA) raised an exception"
+        assert True
+
+    def test_avd_schema_validate_with_invalid_adhoc_schema(self):
+        with pytest.raises(AvdSchemaError):
+            AvdSchema().validate({}, INVALID_SCHEMA)
+
+    @pytest.mark.parametrize("INVALID_DATA", INVALID_ACL_DATA)
+    def test_avd_schema_validate_with_invalid_data(self, INVALID_DATA):
+        with pytest.raises(AvdValidationError):
+            AvdSchema(combined_schema).validate(INVALID_DATA)
+
+    def test_avd_schema_validate_with_missing_data(self):
+        with pytest.raises(TypeError):
+            AvdSchema().validate()
+
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_is_valid_without_schema(self, TEST_DATA):
+        assert AvdSchema().is_valid(TEST_DATA) is True
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_is_valid_with_loaded_schema(self, TEST_SCHEMA, TEST_DATA):
+        assert AvdSchema(TEST_SCHEMA).is_valid(TEST_DATA) is True
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
+    def test_avd_schema_is_valid_with_adhoc_schema(self, TEST_SCHEMA, TEST_DATA):
+        assert AvdSchema().is_valid(TEST_DATA, TEST_SCHEMA) is True
+
+    def test_avd_schema_is_valid_with_invalid_adhoc_schema(self):
+        with pytest.raises(AvdSchemaError):
+            AvdSchema().is_valid({}, INVALID_SCHEMA)
+
+    @pytest.mark.parametrize("INVALID_DATA", INVALID_ACL_DATA)
+    def test_avd_schema_is_valid_with_invalid_data(self, INVALID_DATA):
+        assert AvdSchema(combined_schema).is_valid(INVALID_DATA) is False
+
+    def test_avd_schema_is_valid_with_missing_data(self):
+        with pytest.raises(TypeError):
+            AvdSchema().is_valid()
+
+    def test_avd_schema_is_valid_with_none(self):
+        assert AvdSchema().is_valid(None) is False
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    def test_avd_schema_load_valid_schema(self, TEST_SCHEMA):
+        try:
+            avdschema = AvdSchema()
+            avdschema.load_schema(TEST_SCHEMA)
+        except Exception as e:
+            assert False, "load_schema(TEST_SCHEMA) raised an exception"
+        assert avdschema._schema == TEST_SCHEMA
+
+    def test_avd_schema_load_invalid_schema(self):
+        with pytest.raises(AvdSchemaError):
+            avdschema = AvdSchema()
+            avdschema.load_schema(INVALID_SCHEMA)
+
+    @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
+    def test_avd_schema_extend_valid_schema(self, TEST_SCHEMA):
+        expected_schema = {}
+        expected_schema = always_merger.merge(expected_schema, DEFAULT_SCHEMA)
+        expected_schema = always_merger.merge(expected_schema, TEST_SCHEMA)
+        try:
+            avdschema = AvdSchema()
+            avdschema.extend_schema(TEST_SCHEMA)
+        except Exception as e:
+            assert False, "extend_schema(TEST_SCHEMA) raised an exception"
+        assert avdschema._schema == expected_schema
+
+    def test_avd_schema_extend_invalid_schema(self):
+        with pytest.raises(AvdSchemaError):
+            avdschema = AvdSchema()
+            avdschema.extend_schema(INVALID_SCHEMA)
+
+    @pytest.mark.parametrize("TEST_PATH", TEST_DATA_PATHS)
+    def test_avd_schema_subschema_with_adhoc_schema(self, TEST_PATH):
+        try:
+            avdschema = AvdSchema()
+            subschema = avdschema.subschema(TEST_PATH, combined_schema)
+        except Exception as e:
+            assert False, "subschema(TEST_PATH, combined_schema) raised an exception"
+        if len(TEST_PATH) == 0:
+            assert subschema == EXPECTED_SUBSCHEMAS['_empty']
+        else:
+            assert subschema == EXPECTED_SUBSCHEMAS['.'.join(TEST_PATH)]
+
+    @pytest.mark.parametrize("TEST_PATH", TEST_DATA_PATHS)
+    def test_avd_schema_subschema_with_loaded_schema(self, TEST_PATH):
+        try:
+            avdschema = AvdSchema(combined_schema)
+            subschema = avdschema.subschema(TEST_PATH)
+        except Exception as e:
+            assert False, "subschema(TEST_PATH) raised an exception"
+        if len(TEST_PATH) == 0:
+            assert subschema == EXPECTED_SUBSCHEMAS['_empty']
+        else:
+            assert subschema == EXPECTED_SUBSCHEMAS['.'.join(TEST_PATH)]
+
+    def test_avd_schema_subschema_empty_list_invalid_adhoc_schema(self):
+        with pytest.raises(AvdSchemaError):
+            avdschema = AvdSchema()
+            avdschema.subschema([], INVALID_SCHEMA)
