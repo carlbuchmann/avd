@@ -23,13 +23,27 @@
   delegate_to: localhost
   run_once: true
 
+- name: Import AVD eos_designs schema
+  tags: [build, provision, validate]
+  run_once: true
+  set_fact:
+    schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
+  vars:
+    schema_files: "{{ query('ansible.builtin.fileglob', 'vars/schemas/*.schema.yml') }}"
+
+- name: Validate input vars according to AVD eos_designs schema
+  tags: [build, provision, validate]
+  arista.avd.validate:
+    schema: "{{ schema }}"
+  delegate_to: localhost
+
 - name: Set eos_designs facts
   tags: [build, provision, facts]
   arista.avd.eos_designs_facts:
     avd_switch_facts: true
   check_mode: false
   run_once: true
-
+  
 - name: Set eos_designs facts per device
   tags: [build, provision, facts]
   ansible.builtin.set_fact:
