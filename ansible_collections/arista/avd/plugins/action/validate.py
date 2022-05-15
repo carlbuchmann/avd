@@ -1,17 +1,9 @@
 from __future__ import (absolute_import, division, print_function)
-from email.generator import Generator
 __metaclass__ = type
 
-import yaml
 from ansible.plugins.action import ActionBase
 from ansible.errors import AnsibleActionFail
-from ansible.utils.vars import isidentifier
-from ansible.module_utils.common import file
-from ansible_collections.arista.avd.plugins.module_utils.strip_empties import strip_null_from_data
-from ansible_collections.arista.avd.plugins.plugin_utils.schema.avd_schema import AristaAvdError, AvdSchemaError, AvdSchema, AvdValidationError
-from jsonschema import ValidationError
-from datetime import datetime
-from ansible.module_utils._text import to_text
+from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AristaAvdError, AvdSchema
 from ansible.utils.display import Display
 
 
@@ -31,7 +23,7 @@ class ActionModule(ActionBase):
             raise AnsibleActionFail("The argument 'schema' must be set")
 
         error_counter = 0
-        validation_errors: Generator = AvdSchema(schema).validate(task_vars)
+        validation_errors = AvdSchema(schema).validate(task_vars)
         for validation_error in validation_errors:
             error_counter += 1
             if isinstance(validation_error, AristaAvdError):

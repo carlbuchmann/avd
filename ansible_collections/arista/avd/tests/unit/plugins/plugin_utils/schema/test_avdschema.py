@@ -1,11 +1,14 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible_collections.arista.avd.plugins.plugin_utils.schema.avd_schema import DEFAULT_SCHEMA, AvdSchema, AvdSchemaError, AvdValidationError
+from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import DEFAULT_SCHEMA, AvdSchema
+from ansible_collections.arista.avd.plugins.plugin_utils.schema.errors import AvdValidationError
+
 import yaml
 import pytest
 import os
 from deepmerge import always_merger
+
 
 script_dir = os.path.dirname(__file__)
 with open(f"{script_dir}/../../../../../roles/eos_cli_config_gen/vars/schemas/access_lists.schema.yml", "r", encoding="utf-8") as schema_file:
