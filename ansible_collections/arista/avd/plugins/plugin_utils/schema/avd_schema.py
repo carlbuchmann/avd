@@ -47,10 +47,10 @@ def _primary_key_validator(validator, primary_key, instance, schema):
         return
 
     if not all(element.get(primary_key) for element in instance):
-        yield jsonschema.ValidationError(f"\nPrimary key '{primary_key}' not set on all items as required.")
+        yield jsonschema.ValidationError(f"Primary key '{primary_key}' is not set on all items as required.")
 
     if len(set([element.get(primary_key) for element in instance])) < len(instance):
-        yield jsonschema.ValidationError(f"\nValue of Primary key '{primary_key}' is not unique as required.")
+        yield jsonschema.ValidationError(f"Value of Primary key '{primary_key}' is not unique as required.")
 
 
 def _keys_validator(validator, keys, instance, schema):
@@ -70,14 +70,14 @@ def _keys_validator(validator, keys, instance, schema):
         # Check what instance only contains the schema keys
         invalid_keys = ','.join([key for key in instance if key not in keys])
         if invalid_keys:
-            yield jsonschema.ValidationError(f"\nUnexpected key(s) '{invalid_keys}' in dict.")
+            yield jsonschema.ValidationError(f"Unexpected key(s) '{invalid_keys}' found in dict.")
 
     # Validation of "required" on child keys
     for key in keys:
         if not keys[key].get('required'):
             continue
         if key not in instance:
-            yield jsonschema.ValidationError(f"\nRequired key '{key}' is not set in dict.")
+            yield jsonschema.ValidationError(f"Required key '{key}' is not set in dict.")
 
     # Perform regular validation of each child element.
     for property, subschema in keys.items():
@@ -164,9 +164,9 @@ class AvdSchema():
     def validate(self, data, schema: dict = None):
         try:
             if schema:
-                self.validate_schema(schema)
-                self._validator.validate(data, schema)
-            self._validator.validate(data)
+                self.validate_schema(schema, msg='A Schema error occured during validation of the data')
+                yield from self._validator.iter_errors(data, _schema=schema)
+            yield from self._validator.iter_errors(data)
         except jsonschema.SchemaError as e:
             raise AvdSchemaError('A Schema error occured during validation of the data') from e
         except AvdSchemaError as e:
