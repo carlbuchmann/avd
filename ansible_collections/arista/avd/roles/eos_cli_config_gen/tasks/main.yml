@@ -34,7 +34,8 @@
   vars:
     filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
 
-- tags: [build, provision, validate]
+- name: Import AVD eos_cli_config_gen schema
+  tags: [build, provision, validate]
   run_once: true
   set_fact:
     schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"

@@ -10,19 +10,40 @@ import jsonschema
 from deepmerge import always_merger
 
 
-# TODO import this from utils when python pr merges
+# TODO move this to utils when python pr merges
 class AristaAvdError(Exception):
     def __init__(self, message="An Error has occured in an arista.avd plugin"):
         self.message = message
         super().__init__(self.message)
 
+    def _json_path_to_jinja(self, json_path):
+        path = ""
+        for index, elem in enumerate(json_path):
+            if isinstance(elem, int):
+                path += "[" + str(elem) + "]"
+            else:
+                if index == 0:
+                    path += elem
+                    continue
+                path += "." + elem
+        return path
 
 class AvdSchemaError(AristaAvdError):
-    pass
+    def __init__(self, message = "Schema Error", error: jsonschema.SchemaError = None):
+        if isinstance(error, jsonschema.SchemaError):
+            self.message = f"'Schema Error: {self._json_path_to_jinja(error.absolute_path)}': {error.message}"
+        else:
+            self.message = message
+        super().__init__(self.message)
 
 
 class AvdValidationError(AristaAvdError):
-    pass
+    def __init__(self, message: str = "Schema Error", error: jsonschema.ValidationError = None):
+        if isinstance(error, (jsonschema.ValidationError)):
+            self.message = f"'Validation Error: {self._json_path_to_jinja(error.absolute_path)}': {error.message}"
+        else:
+            self.message = message
+        super().__init__(self.message)
 
 
 script_dir = os.path.dirname(__file__)
@@ -136,57 +157,63 @@ class AvdSchema():
     def __init__(self, schema: dict = None):
         if not schema:
             schema = DEFAULT_SCHEMA
+        self._schema_validator = jsonschema.Draft7Validator(AVD_META_SCHEMA)
         self.load_schema(schema)
 
-    def validate_schema(self, schema: dict, msg: str = None):
-        if not msg:
-            msg = "An error occured during validation of the schema"
-        if not isinstance(schema, dict):
-            raise AvdValidationError('The supplied schema is not a dictionary')
-        try:
-            jsonschema.validate(schema, AVD_META_SCHEMA)
-        except Exception as e:
-            raise AvdSchemaError(msg) from e
+    def validate_schema(self, schema: dict):
+        validation_errors = self._schema_validator.iter_errors(schema)
+        for validation_error in validation_errors:
+            yield self._errror_handler(validation_error)
 
     def load_schema(self, schema: dict):
-        self.validate_schema(schema)
+        for validation_error in self.validate_schema(schema):
+            raise validation_error
         self._schema = schema
         try:
             self._validator = AvdSchemaValidator(schema)
         except Exception as e:
-            raise AvdSchemaError('An error occured during creation of the validator') from e
+            raise AristaAvdError('An error occured during creation of the validator') from e
 
     def extend_schema(self, schema: dict):
-        self.validate_schema(schema)
+        for validation_error in self.validate_schema(schema):
+            raise validation_error
         always_merger.merge(self._schema, schema)
-        self.validate_schema(self._schema, msg="An error occured during validation of the new merged schema")
+        for validation_error in self.validate_schema(self._schema):
+            raise validation_error
 
     def validate(self, data, schema: dict = None):
+        if schema:
+            for schema_validation_error in self.validate_schema(schema):
+                yield schema_validation_error
+                return
+
+            validation_errors = self._validator.iter_errors(data, _schema=schema)
+        else:
+            validation_errors = self._validator.iter_errors(data)
+
         try:
-            if schema:
-                self.validate_schema(schema, msg='A Schema error occured during validation of the data')
-                yield from self._validator.iter_errors(data, _schema=schema)
-            yield from self._validator.iter_errors(data)
-        except jsonschema.SchemaError as e:
-            raise AvdSchemaError('A Schema error occured during validation of the data') from e
-        except AvdSchemaError as e:
-            raise AvdSchemaError('A Schema error occured during validation of the data') from e
-        except Exception as e:
-            raise AvdValidationError('An error occured during validation of the data') from e
+            for validation_error in validation_errors:
+                yield self._errror_handler(validation_error)
+        except Exception as error:
+            yield self._errror_handler(error)
+
+    def _errror_handler(self, error: Exception):
+        if isinstance(error, jsonschema.ValidationError):
+            return AvdValidationError(error=error)
+        if isinstance(error, jsonschema.SchemaError):
+            return AvdSchemaError(error=error)
+        return AvdSchemaError(str(error))
 
     def is_valid(self, data, schema: dict = None):
+        if schema:
+            for schema_validation_error in self.validate_schema(schema):
+                raise schema_validation_error
         try:
             if schema:
-                self.validate_schema(schema)
                 return self._validator.is_valid(data, _schema=schema)
             return self._validator.is_valid(data)
-        except jsonschema.SchemaError as e:
-            raise AvdSchemaError('A Schema error occured during validation of the data') from e
-        except AvdSchemaError as e:
-            raise AvdSchemaError('A Schema error occured during validation of the data') from e
-        except Exception as e:
-            raise AvdValidationError('An error occured during validation of the data') from e
-
+        except Exception as error:
+            raise self._errror_handler(error) from error
 
     def subschema(self, datapath: list, schema=None):
         '''
@@ -242,7 +269,8 @@ class AvdSchema():
         if not schema:
             schema = self._schema
 
-        self.validate_schema(schema)
+        for validation_error in self.validate_schema(schema):
+            raise validation_error
 
         if len(datapath) == 0:
             return schema
@@ -258,4 +286,5 @@ class AvdSchema():
         if schema['type'] == 'list' and key in schema.get('items', {}).get('keys', []):
             return self.subschema(datapath[1:], schema['items']['keys'][key])
 
-        raise AvdSchemaError('The datapath could not be mapped to the schema')
+        # Falling through here in case the schema is not covering the requested datapath
+        raise AvdSchemaError('The datapath could not be found in the schema')

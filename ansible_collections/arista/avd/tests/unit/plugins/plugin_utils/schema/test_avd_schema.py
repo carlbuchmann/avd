@@ -85,30 +85,30 @@ class TestAvdSchema():
         assert avdschema._schema == TEST_SCHEMA
 
     def test_avd_schema_init_with_invalid_schema(self):
-        with pytest.raises(AvdSchemaError):
+        with pytest.raises(AvdValidationError):
             AvdSchema(INVALID_SCHEMA)
 
     @pytest.mark.parametrize("TEST_SCHEMA", VALID_TEST_SCHEMAS)
     def test_avd_schema_validate_schema(self, TEST_SCHEMA):
         try:
-            AvdSchema().validate_schema(TEST_SCHEMA)
+            for validation_error in AvdSchema().validate_schema(TEST_SCHEMA):
+                assert False, f"Validation Error '{validation_error.message}' returned"
         except Exception as e:
             assert False, "AvdSchema().validate_schema(TEST_SCHEMA) raised an exception"
         assert True
 
     def test_avd_schema_validate_invalid_schema(self):
-        with pytest.raises(AvdSchemaError):
-            AvdSchema().validate_schema(INVALID_SCHEMA)
-
-    def test_avd_schema_validate_invalid_schema_with_msg(self):
-        with pytest.raises(AvdSchemaError) as e:
-            AvdSchema().validate_schema(INVALID_SCHEMA, msg="Special error message")
-        assert str(e.value) == "Special error message"
+        try:
+            for validation_error in AvdSchema().validate_schema(INVALID_SCHEMA):
+                assert isinstance(validation_error, AvdValidationError)
+        except Exception as e:
+            assert False, "AvdSchema().validate_schema(INVALID_SCHEMA) raised an exception"
 
     @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
     def test_avd_schema_validate_without_schema(self, TEST_DATA):
         try:
-            AvdSchema().validate(TEST_DATA)
+            for validation_error in AvdSchema().validate(TEST_DATA):
+                pass
         except Exception as e:
             assert False, "AvdSchema().validate(TEST_DATA) raised an exception"
         assert True
@@ -117,7 +117,8 @@ class TestAvdSchema():
     @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
     def test_avd_schema_validate_with_loaded_schema(self, TEST_SCHEMA, TEST_DATA):
         try:
-            AvdSchema(TEST_SCHEMA).validate(TEST_DATA)
+            for validation_error in AvdSchema(TEST_SCHEMA).validate(TEST_DATA):
+                assert False, f"Validation Error '{validation_error.message}' returned"
         except Exception as e:
             assert False, "AvdSchema(TEST_SCHEMA).validate(TEST_DATA) raised an exception"
         assert True
@@ -126,19 +127,26 @@ class TestAvdSchema():
     @pytest.mark.parametrize("TEST_DATA", TEST_DATA_SETS)
     def test_avd_schema_validate_with_adhoc_schema(self, TEST_SCHEMA, TEST_DATA):
         try:
-            AvdSchema().validate(TEST_DATA, TEST_SCHEMA)
+            for validation_error in AvdSchema().validate(TEST_DATA, TEST_SCHEMA):
+                assert False, f"Validation Error '{validation_error.message}' returned"
         except Exception as e:
             assert False, "AvdSchema().validate(TEST_DATA, TEST_SCHEMA) raised an exception"
         assert True
 
     def test_avd_schema_validate_with_invalid_adhoc_schema(self):
-        with pytest.raises(AvdSchemaError):
-            AvdSchema().validate({}, INVALID_SCHEMA)
+        try:
+            for validation_error in AvdSchema().validate({}, INVALID_SCHEMA):
+                assert isinstance(validation_error, AvdValidationError)
+        except Exception as e:
+            assert False, "AvdSchema().validate({}, INVALID_SCHEMA) raised an exception"
 
     @pytest.mark.parametrize("INVALID_DATA", INVALID_ACL_DATA)
     def test_avd_schema_validate_with_invalid_data(self, INVALID_DATA):
-        with pytest.raises(AvdValidationError):
-            AvdSchema(combined_schema).validate(INVALID_DATA)
+        try:
+            for validation_error in AvdSchema(combined_schema).validate(INVALID_DATA):
+                assert isinstance(validation_error, AvdValidationError)
+        except Exception as e:
+            assert False, "AvdSchema().validate(TEST_DATA, TEST_SCHEMA) raised an exception"
 
     def test_avd_schema_validate_with_missing_data(self):
         with pytest.raises(TypeError):
@@ -159,7 +167,7 @@ class TestAvdSchema():
         assert AvdSchema().is_valid(TEST_DATA, TEST_SCHEMA) is True
 
     def test_avd_schema_is_valid_with_invalid_adhoc_schema(self):
-        with pytest.raises(AvdSchemaError):
+        with pytest.raises(AvdValidationError):
             AvdSchema().is_valid({}, INVALID_SCHEMA)
 
     @pytest.mark.parametrize("INVALID_DATA", INVALID_ACL_DATA)
@@ -183,7 +191,7 @@ class TestAvdSchema():
         assert avdschema._schema == TEST_SCHEMA
 
     def test_avd_schema_load_invalid_schema(self):
-        with pytest.raises(AvdSchemaError):
+        with pytest.raises(AvdValidationError):
             avdschema = AvdSchema()
             avdschema.load_schema(INVALID_SCHEMA)
 
@@ -200,7 +208,7 @@ class TestAvdSchema():
         assert avdschema._schema == expected_schema
 
     def test_avd_schema_extend_invalid_schema(self):
-        with pytest.raises(AvdSchemaError):
+        with pytest.raises(AvdValidationError):
             avdschema = AvdSchema()
             avdschema.extend_schema(INVALID_SCHEMA)
 
@@ -229,6 +237,6 @@ class TestAvdSchema():
             assert subschema == EXPECTED_SUBSCHEMAS['.'.join(TEST_PATH)]
 
     def test_avd_schema_subschema_empty_list_invalid_adhoc_schema(self):
-        with pytest.raises(AvdSchemaError):
+        with pytest.raises(AvdValidationError):
             avdschema = AvdSchema()
             avdschema.subschema([], INVALID_SCHEMA)
