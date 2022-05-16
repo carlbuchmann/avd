@@ -24,7 +24,7 @@
   run_once: true
 
 - name: Import AVD eos_designs schema
-  tags: [build, provision, validate]
+  tags: [never, validate]
   run_once: true
   set_fact:
     schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
@@ -32,7 +32,7 @@
     schema_files: "{{ query('ansible.builtin.fileglob', 'vars/schemas/*.schema.yml') }}"
 
 - name: Validate input vars according to AVD eos_designs schema
-  tags: [build, provision, validate]
+  tags: [never, validate]
   arista.avd.validate:
     schema: "{{ schema }}"
   delegate_to: localhost
