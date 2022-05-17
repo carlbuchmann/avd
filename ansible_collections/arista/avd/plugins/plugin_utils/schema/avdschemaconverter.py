@@ -34,8 +34,8 @@ class AvdSchemaConverter:
         schema = self._avdschema.subschema([])
         return self.convert(schema, self.studio_converters)
 
-    def convert(self, input: dict, converters: dict, name: str = "root"):
-        output = {name: {"name": name, "id": name, "label": name}}
+    def convert(self, input: dict, converters: dict, name: str = "root", var_name: str = ""):
+        output = {name: {"name": var_name, "id": name, "label": var_name}}
         for key, value in input.items():
             if key in converters:
                 always_merger.merge(output, converters[key](self, value, name, input, converters))
@@ -74,7 +74,7 @@ def convert_required_to_studios(avdschemaconverter, required, name, input, conve
 def convert_items_to_studios(avdschemaconverter, items, name, input, converters):
     item_name = f"{name}-item"
     output = {name: {"collection_props": {"base_field_id": item_name}}}
-    always_merger.merge(output, avdschemaconverter.convert(items, converters, item_name))
+    always_merger.merge(output, avdschemaconverter.convert(items, converters, item_name, item_name))
     return output
 
 def convert_keys_to_studios(avdschemaconverter, keys, name, input, converters):
@@ -83,7 +83,7 @@ def convert_keys_to_studios(avdschemaconverter, keys, name, input, converters):
     for key, value in keys.items():
         member_name = f"{name}-{key}"
         members.append(member_name)
-        always_merger.merge(output, avdschemaconverter.convert(value, converters, member_name))
+        always_merger.merge(output, avdschemaconverter.convert(value, converters, member_name, key))
     always_merger.merge(output, {name: {"group_props": {"members": {"values": members}}}})
     return output
 
@@ -113,8 +113,20 @@ def convert_type_to_studios(avdschemaconverter, type, name, input, converters):
         "dict": "INPUT_FIELD_TYPE_GROUP",
         "list": "INPUT_FIELD_TYPE_COLLECTION",
     }
+    type_properties={
+        "str": "string_props",
+        "int": "integer_props",
+        "bool": "boolean_props",
+        "dict": "group_props",
+        "list": "collection_props",
+    }
     # Return the converted format or String
-    return {name: {"type": type_converters.get(type, "INPUT_FIELD_TYPE_STRING")}}
+    return {
+        name: {
+            "type": type_converters.get(type, "INPUT_FIELD_TYPE_STRING"),
+            type_properties.get(type, "string_props"): {}
+        }
+    }
 
 def convert_valid_values_to_studios(avdschemaconverter, valid_values, name, input, converters):
     if input['type'] == 'int':
