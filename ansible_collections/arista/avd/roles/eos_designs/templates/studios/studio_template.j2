@@ -1,0 +1,124 @@
+<%
+import ansible_runner
+import json
+
+def strip_empty_strings(data):
+    if isinstance(data, str):
+        if data == "":
+            return None
+        return data
+    if isinstance(data, dict):
+        new_data = {}
+        for k, v in data.items():
+            v = strip_empty_strings(v)
+            if v is None:
+                continue
+            new_data[k] = v
+        return new_data
+    if isinstance(data, list):
+        new_data = []
+        for item in data:
+            v = strip_empty_strings(item)
+            if v is None:
+                continue
+            new_data.append(v)
+        return new_data
+    return data
+
+_var_data = strip_empty_strings(dict(ctx.studio.inputs))
+_var_data.update({
+    'mgmt_gateway': "10.90.224.1",
+    'cvp_instance_ip': "10.90.224.100",
+    'local_users': {
+        "cvpadmin": {
+            "role": "network_admin",
+            "privilege": "15",
+            "sha512_password": "$6$MfWfHDSxXJ9evpQu$q9gI/9gm8fVaXupIh4NvHoGJ4YcM.7suYc1Y.vy1hDosVO7GX35Xq.OeiYwj/AYbCfuPe//MWLq.zQlwZkPQz/"
+        }
+    },
+    'ntp': {
+        "10.90.20.122": {
+            "iburst": True,
+            "vrf": "MGMT",
+        }
+    },
+    'cvp_ingestauth_key': "",
+    'custom_structured_configuration_daemon_terminattr' : {
+        'cvauth': {
+            'method': 'token',
+            'token_file': '/tmp/token'
+        }
+    }
+})
+_host_data = {}
+_this_device = ctx.getDevice()
+_this_hostname = str(_this_device.hostName)
+# TODO GET all devices even if they are added in this workspace...
+_all_devices = ctx.topology.getDevices()
+_fabric_name = fabric_name #_var_data.get('fabric_name',"no_fabric_name")
+
+for _device in _all_devices:
+    _host_data[_device.hostName] = {}
+
+# Implement a workaround for AVD expecting devices to be defined under node_type tree.
+_hack_l3leaf = _var_data.get('node_type_key')
+_hack_l3leaf.update({"nodes": _host_data})
+_var_data.update({ "l3leaf": _hack_l3leaf })
+
+# Run Ansible AVD passing inventory, variables and playbook as arguments.
+_runner_result = ansible_runner.interface.run(
+    envvars={
+        "ANSIBLE_JINJA2_EXTENSIONS": "jinja2.ext.loopcontrols,jinja2.ext.do,jinja2.ext.i18n"
+    },
+    inventory={
+        "all": {
+            "children": {
+                _fabric_name: {
+                    "hosts": _host_data,
+                    "vars" : _var_data
+                }
+            }
+        }
+    },
+    skip_tags="documentation",
+    verbosity=0,
+    limit=_this_hostname,
+    playbook=[
+        {
+            "name": "Run AVD",
+            "hosts": _fabric_name,
+            "gather_facts": "false",
+            "connection": "local",
+            "tasks": [
+                {
+                    "import_role": {
+                        "name": "arista.avd.eos_designs",
+                        "tasks_from": "studios"
+                    },
+                },
+                {
+                    "name": "generate device intended config and documentation",
+                    "import_role": {
+                        "name": "arista.avd.eos_cli_config_gen",
+                        "tasks_from": "studios"
+                    }
+                },
+            ]
+        }
+    ],
+    json_mode=False,
+    quiet=True
+)
+_result = ""
+for _event in _runner_result.host_events(_this_hostname):
+    _event_data = _event.get('event_data',{})
+    if _event_data.get('role') == 'eos_cli_config_gen':
+        _result = _event['event_data'].get('res',{}).get('ansible_facts',{}).get('eos_config')
+        if _result:
+            break
+if not _result:
+    with _runner_result.stdout as _output:
+        _result = _output.read()
+%>
+! All devices: ${f"{[device.hostName for device in _all_devices]}"}
+${_result}

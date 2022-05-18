@@ -98,10 +98,11 @@ keys:
             description: EOS CLI rendered directly on the root level of the final EOS configuration
             type: str
 
-          # TODO: Handle dict in studios with no fixed data model
           structured_config:
             description: Custom structured config for eos_cli_config_gen
             type: str
+            studios_options:
+              exclude: True
 
           uplink_ipv4_pool:
             display_name: Uplink IPv4 Pool

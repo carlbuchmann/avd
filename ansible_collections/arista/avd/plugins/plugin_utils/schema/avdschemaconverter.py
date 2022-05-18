@@ -81,6 +81,8 @@ def convert_keys_to_studios(avdschemaconverter, keys, name, input, converters):
     members = []
     output = {}
     for key, value in keys.items():
+        if value.get('studios_options', {}).get('exclude', False) is True:
+            continue
         member_name = f"{name}-{key}"
         members.append(member_name)
         always_merger.merge(output, avdschemaconverter.convert(value, converters, member_name, key))

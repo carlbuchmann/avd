@@ -43,7 +43,8 @@
   tags: [deploy]
   ansible.builtin.set_fact:
     workspace_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
-    studio_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
+    # studio_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
+    studio_uuid: "b0bb0fa9-862f-5148-8fb6-b9b8e7621eb6"
   delegate_to: localhost
 
 - name: Create Workspace on CloudVision
@@ -81,7 +82,7 @@
       "description": "This studio was created from Ansible",
       "template": {
         "type": "TEMPLATE_TYPE_MAKO",
-        "body": "% if testvar:\n  !my testvar is ${testvar}\n% endif\n"
+        "body": "{{ lookup('template', 'studios/studio_template.j2') }}"
       },
       "input_schema": {
         "fields": {
