@@ -145,4 +145,4 @@ class AvdSchema():
             return self.subschema(datapath[1:], schema['items']['keys'][key])
 
         # Falling through here in case the schema is not covering the requested datapath
-        raise AvdSchemaError('The datapath could not be found in the schema')
+        raise AvdSchemaError(f"The datapath '{datapath}' could not be found in the schema")
