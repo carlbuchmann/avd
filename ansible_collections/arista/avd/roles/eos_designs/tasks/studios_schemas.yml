@@ -84,6 +84,19 @@
 
 - name: Create Studio on CloudVision
   tags: [deploy, build, submit]
+  ansible.builtin.debug:
+    msg: "{{ studio | ansible.builtin.combine(body) }}"
+  vars:
+    body: {
+      "key": {
+        "studio_id": "{{ studio_uuid }}",
+        "workspace_id": "{{ workspace_uuid }}"
+      }
+    }
+  delegate_to: localhost
+
+- name: Create Studio on CloudVision
+  tags: [deploy, build, submit]
   delegate_to: localhost
   ansible.builtin.uri:
     url: "https://{{ inventory_hostname }}/api/resources/studio/v1/StudioConfig"
@@ -92,18 +105,14 @@
       Cookie: "access_token={{ ansible_password }}"
     method: POST
     body_format: json
-    body: "{{ studio | ansible.builtin.combine(key) }}"
-    vars:
-      body: {
-        "key": {
-          "studio_id": "{{ studio_uuid }}",
-          "workspace_id": "{{ workspace_uuid }}"
-        },
-        "template": {
-          "type": "TEMPLATE_TYPE_MAKO",
-          "body": "{{ lookup('template', 'studios/studio_template.j2') }}"
-        },
+    body: "{{ studio | ansible.builtin.combine(body) }}"
+  vars:
+    body: {
+      "key": {
+        "studio_id": "{{ studio_uuid }}",
+        "workspace_id": "{{ workspace_uuid }}"
       }
+    }
 
 - name: Build Workspace on CloudVision
   tags: [build, submit]

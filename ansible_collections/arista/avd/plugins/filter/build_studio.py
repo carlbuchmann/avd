@@ -10,7 +10,7 @@ test_studio_design = {
     "display_name": "my test studio",
     "description": "",
     "inputs": {
-        "fabric_name": None
+        "fabric_name": {}
     },
     "resolvers": {
         "dc_vars": {
