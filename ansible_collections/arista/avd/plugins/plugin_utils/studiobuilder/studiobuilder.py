@@ -241,21 +241,20 @@ def __map_data(_data_maps, _input_data, _tag_data):
                 for key in keys[:-1]:
                     data_pointer.setdefault(key, {})
                     data_pointer = data_pointer[key]
-                input_data[_device][keys[-1]] = value
+                _input_data[_device][keys[-1]] = value
 
 # TODO Find a better way of getting all associated devices - currently we just rely on the topology, but a studio might not be associated with all devices
 _all_devices = ctx.topology.getDevices()
-_device_names = {device.id: device.hostName for device in _all_devices}
 _this_hostname = ctx.device.hostName
 _tag_data = {}
 _input_data = {}
 for _device in _all_devices:
-    _tag_data[_device.id] = __get_all_device_tags(_device.id)
-    _input_data[_device.id] = {}
+    _tag_data[_device.hostName] = __get_all_device_tags(_device.id)
+    _input_data[_device.hostName] = {}
     for _input_name, _input in ctx.studio.inputs.items():
-        _input_data[_device.id][_input_name] = __strip_and_resolve(_input, _device.id)
+        _input_data[_device.hostName][_input_name] = __strip_and_resolve(_input, _device.id)
 
-    _input_data[_device.id].update({
+    _input_data[_device.hostName].update({
         'mgmt_gateway': "10.90.224.1",
         'cvp_instance_ip': "10.90.224.100",
         'local_users': {
