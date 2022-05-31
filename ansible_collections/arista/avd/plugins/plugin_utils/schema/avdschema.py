@@ -1,18 +1,36 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import jsonschema
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.errors import AvdSchemaError, AvdValidationError, AristaAvdError
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdvalidator import AVD_META_SCHEMA, AvdValidator
-from deepmerge import always_merger
+
+try:
+    import jsonschema
+except ImportError as imp_exc:
+    JSONSCHEMA_IMPORT_ERROR = imp_exc
+else:
+    JSONSCHEMA_IMPORT_ERROR = None
+
+try:
+    from deepmerge import always_merger
+except ImportError as imp_exc:
+    DEEPMERGE_IMPORT_ERROR = imp_exc
+else:
+    DEEPMERGE_IMPORT_ERROR = None
 
 DEFAULT_SCHEMA = {
     "type": "dict",
     "allow_other_keys": True,
 }
 
+
 class AvdSchema():
     def __init__(self, schema: dict = None):
+        if JSONSCHEMA_IMPORT_ERROR:
+            raise AristaAvdError('Python library "jsonschema" must be installed to use this plugin') from JSONSCHEMA_IMPORT_ERROR
+        if DEEPMERGE_IMPORT_ERROR:
+            raise AristaAvdError('Python library "deepmerge" must be installed to use this plugin') from DEEPMERGE_IMPORT_ERROR
+
         if not schema:
             schema = DEFAULT_SCHEMA
         self._schema_validator = jsonschema.Draft7Validator(AVD_META_SCHEMA)

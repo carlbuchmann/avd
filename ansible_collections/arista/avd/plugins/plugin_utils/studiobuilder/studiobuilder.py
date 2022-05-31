@@ -3,8 +3,8 @@ __metaclass__ = type
 
 from ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder.avdschemaconverter import AvdSchemaConverter
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
-from deepmerge import always_merger
 import json
+
 
 class AvdStudioBuilder:
     def __init__(self, avdschema: AvdSchema, ):
@@ -123,7 +123,7 @@ class AvdStudioBuilder:
 
             resolver = {
                 "type": "INPUT_FIELD_TYPE_RESOLVER",
-                "label": resolver_options.get('display_name',resolver_short_name),
+                "label": resolver_options.get('display_name', resolver_short_name),
                 "id": resolver_key,
                 "name": resolver_name,
                 "description": resolver_options.get("description", ""),
@@ -137,7 +137,7 @@ class AvdStudioBuilder:
             }
             resolver_group = {
                 "type": "INPUT_FIELD_TYPE_GROUP",
-                "label": resolver_options.get('display_name',resolver_name),
+                "label": resolver_options.get('display_name', resolver_name),
                 "id": resolver_group_key,
                 "name": resolver_group_name,
                 "description": resolver_options.get("description", ""),
@@ -171,6 +171,7 @@ class AvdStudioBuilder:
         data_maps = self._data_maps
         template = STUDIO_TEMPLATE.replace("DATA_MAPS = []", f"DATA_MAPS = {data_maps}")
         self._template = template
+
 
 STUDIO_TEMPLATE = '''
 <%

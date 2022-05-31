@@ -1,13 +1,23 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
+from ansible_collections.arista.avd.plugins.plugin_utils.schema.errors import AristaAvdError
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
-from deepmerge import always_merger
-import ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder.studioschemaconverters as studioschemaconverters
+from ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder import studioschemaconverters
+
+try:
+    from deepmerge import always_merger
+except ImportError as imp_exc:
+    DEEPMERGE_IMPORT_ERROR = imp_exc
+else:
+    DEEPMERGE_IMPORT_ERROR = None
 
 
 class AvdSchemaConverter:
     def __init__(self, avdschema: AvdSchema, studio_converter: dict = None):
+        if DEEPMERGE_IMPORT_ERROR:
+            raise AristaAvdError('Python library "deepmerge" must be installed to use this plugin') from DEEPMERGE_IMPORT_ERROR
+
         self._avdschema = avdschema
         if studio_converter:
             self.studio_converter = studio_converter

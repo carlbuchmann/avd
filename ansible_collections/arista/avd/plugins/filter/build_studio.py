@@ -112,7 +112,7 @@ def build_studio(schema, studio_design=None):
         If the input schema is not valid, exceptions will be raised accordingly.
     """
     if studio_design is None:
-        studio_design=test_studio_design
+        studio_design = test_studio_design
 
     avdschema = AvdSchema(schema)
 

@@ -1,7 +1,12 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-import jsonschema
+try:
+    import jsonschema
+except ImportError as imp_exc:
+    JSONSCHEMA_IMPORT_ERROR = imp_exc
+else:
+    JSONSCHEMA_IMPORT_ERROR = None
 
 
 class AristaAvdError(Exception):
@@ -21,8 +26,12 @@ class AristaAvdError(Exception):
                 path += "." + elem
         return path
 
+
 class AvdSchemaError(AristaAvdError):
-    def __init__(self, message = "Schema Error", error: jsonschema.SchemaError = None):
+    def __init__(self, message="Schema Error", error=None):
+        if JSONSCHEMA_IMPORT_ERROR:
+            raise AristaAvdError('Python library "jsonschema" must be installed to use this plugin') from JSONSCHEMA_IMPORT_ERROR
+
         if isinstance(error, jsonschema.SchemaError):
             self.message = f"'Schema Error: {self._json_path_to_jinja(error.absolute_path)}': {error.message}"
         else:
@@ -31,7 +40,10 @@ class AvdSchemaError(AristaAvdError):
 
 
 class AvdValidationError(AristaAvdError):
-    def __init__(self, message: str = "Schema Error", error: jsonschema.ValidationError = None):
+    def __init__(self, message: str = "Schema Error", error=None):
+        if JSONSCHEMA_IMPORT_ERROR:
+            raise AristaAvdError('Python library "jsonschema" must be installed to use this plugin') from JSONSCHEMA_IMPORT_ERROR
+
         if isinstance(error, (jsonschema.ValidationError)):
             self.message = f"'Validation Error: {self._json_path_to_jinja(error.absolute_path)}': {error.message}"
         else:

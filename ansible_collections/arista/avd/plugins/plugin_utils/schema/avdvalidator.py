@@ -3,12 +3,16 @@ __metaclass__ = type
 
 import os
 import json
-import jsonschema.validators
-import jsonschema._validators
-import jsonschema._types
-import jsonschema
 
-
+try:
+    import jsonschema.validators
+    import jsonschema._validators
+    import jsonschema._types
+    import jsonschema
+except ImportError as imp_exc:
+    JSONSCHEMA_IMPORT_ERROR = imp_exc
+else:
+    JSONSCHEMA_IMPORT_ERROR = None
 
 script_dir = os.path.dirname(__file__)
 with open(f"{script_dir}/avd_meta_schema.json", "r", encoding="utf-8") as file:
@@ -76,36 +80,39 @@ mapped to our own keywords.
 We have extra type checkers not covered by the AVD_META_SCHEMA (array, boolean etc)
 since the same TypeChecker is used by the validators themselves.
 '''
-AvdValidator = jsonschema.validators.create(
-    meta_schema=AVD_META_SCHEMA,
-    validators={
-        "type": jsonschema._validators.type,
-        "max": jsonschema._validators.maximum,
-        "min": jsonschema._validators.minimum,
-        "valid_values": jsonschema._validators.enum,
-        "format": jsonschema._validators.format,
-        "max_length": jsonschema._validators.maxLength,
-        "min_length": jsonschema._validators.minLength,
-        "pattern": jsonschema._validators.pattern,
-        "items": jsonschema._validators.items,
-        "primary_key": _primary_key_validator,
-        "keys": _keys_validator
-    },
-    type_checker=jsonschema.TypeChecker({
-        "any": jsonschema._types.is_any,
-        "array": jsonschema._types.is_array,
-        "boolean": jsonschema._types.is_bool,
-        "integer": jsonschema._types.is_integer,
-        "object": jsonschema._types.is_object,
-        "null": jsonschema._types.is_null,
-        "None": jsonschema._types.is_null,
-        "number": jsonschema._types.is_number,
-        "string": jsonschema._types.is_string,
-        "dict": jsonschema._types.is_object,
-        "str": jsonschema._types.is_string,
-        "bool": jsonschema._types.is_bool,
-        "list": jsonschema._types.is_array,
-        "int": jsonschema._types.is_integer,
-    })
-    # version="0.1",
-)
+if JSONSCHEMA_IMPORT_ERROR:
+    AvdValidator = None
+else:
+    AvdValidator = jsonschema.validators.create(
+        meta_schema=AVD_META_SCHEMA,
+        validators={
+            "type": jsonschema._validators.type,
+            "max": jsonschema._validators.maximum,
+            "min": jsonschema._validators.minimum,
+            "valid_values": jsonschema._validators.enum,
+            "format": jsonschema._validators.format,
+            "max_length": jsonschema._validators.maxLength,
+            "min_length": jsonschema._validators.minLength,
+            "pattern": jsonschema._validators.pattern,
+            "items": jsonschema._validators.items,
+            "primary_key": _primary_key_validator,
+            "keys": _keys_validator
+        },
+        type_checker=jsonschema.TypeChecker({
+            "any": jsonschema._types.is_any,
+            "array": jsonschema._types.is_array,
+            "boolean": jsonschema._types.is_bool,
+            "integer": jsonschema._types.is_integer,
+            "object": jsonschema._types.is_object,
+            "null": jsonschema._types.is_null,
+            "None": jsonschema._types.is_null,
+            "number": jsonschema._types.is_number,
+            "string": jsonschema._types.is_string,
+            "dict": jsonschema._types.is_object,
+            "str": jsonschema._types.is_string,
+            "bool": jsonschema._types.is_bool,
+            "list": jsonschema._types.is_array,
+            "int": jsonschema._types.is_integer,
+        })
+        # version="0.1",
+    )

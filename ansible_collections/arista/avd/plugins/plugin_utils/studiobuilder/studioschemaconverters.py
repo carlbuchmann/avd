@@ -1,7 +1,12 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from deepmerge import always_merger
+try:
+    from deepmerge import always_merger
+except ImportError as imp_exc:
+    DEEPMERGE_IMPORT_ERROR = imp_exc
+else:
+    DEEPMERGE_IMPORT_ERROR = None
 
 
 def default(avdschemaconverter, default, name, input, converters):
@@ -12,14 +17,17 @@ def default(avdschemaconverter, default, name, input, converters):
     if input['type'] == 'bool':
         return {name: {"boolean_props": {"default_value": bool(default)}}}
 
+
 def description(avdschemaconverter, description, name, input, converters):
     return {name: {"description": ""}}
+
 
 def display_name(avdschemaconverter, display_name, name, input, converters):
     return {name: {"label": display_name}}
 
+
 def format(avdschemaconverter, format, name, input, converters):
-    format_converters={
+    format_converters = {
         "ipv4": "ip",
         "ipv4_cidr": "cidr",
         "ipv6": "ipv6",
@@ -31,16 +39,25 @@ def format(avdschemaconverter, format, name, input, converters):
     # Return the converted format or None
     return {name: {"string_props": {"format": format_converters.get(format, None)}}}
 
+
 def required(avdschemaconverter, required, name, input, converters):
     return {name: {"required": required}}
 
+
 def items(avdschemaconverter, items, name, input, converters):
+    if DEEPMERGE_IMPORT_ERROR:
+        return
+
     item_name = f"{name}-item"
     output = {name: {"collection_props": {"base_field_id": item_name}}}
     always_merger.merge(output, avdschemaconverter.convert(items, converters, item_name, item_name))
     return output
 
+
 def keys(avdschemaconverter, keys, name, input, converters):
+    if DEEPMERGE_IMPORT_ERROR:
+        return
+
     members = []
     output = {}
     for key, value in keys.items():
@@ -52,33 +69,40 @@ def keys(avdschemaconverter, keys, name, input, converters):
     always_merger.merge(output, {name: {"group_props": {"members": {"values": members}}}})
     return output
 
+
 def max(avdschemaconverter, max, name, input, converters):
     return {name: {"integer_props": {"range": f"{input.get('min','min')}..{max}"}}}
+
 
 def max_length(avdschemaconverter, max_length, name, input, converters):
     return {name: {"string_props": {"length": f"{input.get('min_length','min')}..{max_length}"}}}
 
+
 def min(avdschemaconverter, min, name, input, converters):
     return {name: {"integer_props": {"range": f"{min}..{input.get('max','max')}"}}}
+
 
 def min_length(avdschemaconverter, min_length, name, input, converters):
     return {name: {"string_props": {"length": f"{min_length}..{input.get('max_length','max')}"}}}
 
+
 def pattern(avdschemaconverter, pattern, name, input, converters):
     return {name: {"string_props": {"pattern": pattern}}}
+
 
 def primary_key(avdschemaconverter, primary_key, name, input, converters):
     return {name: {"collection_props": {"key": primary_key}}}
 
+
 def convert_type(avdschemaconverter, type, name, input, converters):
-    type_converters={
+    type_converters = {
         "str": "INPUT_FIELD_TYPE_STRING",
         "int": "INPUT_FIELD_TYPE_INTEGER",
         "bool": "INPUT_FIELD_TYPE_BOOLEAN",
         "dict": "INPUT_FIELD_TYPE_GROUP",
         "list": "INPUT_FIELD_TYPE_COLLECTION",
     }
-    type_properties={
+    type_properties = {
         "str": "string_props",
         "int": "integer_props",
         "bool": "boolean_props",
@@ -92,6 +116,7 @@ def convert_type(avdschemaconverter, type, name, input, converters):
             type_properties.get(type, "string_props"): {}
         }
     }
+
 
 def valid_values(avdschemaconverter, valid_values, name, input, converters):
     if input['type'] == 'int':
