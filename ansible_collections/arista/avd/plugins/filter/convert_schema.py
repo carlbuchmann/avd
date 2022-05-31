@@ -2,7 +2,7 @@ from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
-from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschemaconverter import AvdSchemaConverter
+from ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder.avdschemaconverter import AvdSchemaConverter
 from ansible.utils.display import Display
 
 

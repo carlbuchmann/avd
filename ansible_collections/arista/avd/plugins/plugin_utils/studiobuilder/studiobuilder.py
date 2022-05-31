@@ -1,7 +1,7 @@
 from __future__ import (absolute_import, division, print_function)
 __metaclass__ = type
 
-from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschemaconverter import AvdSchemaConverter
+from ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder.avdschemaconverter import AvdSchemaConverter
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
 from deepmerge import always_merger
 import json
@@ -51,21 +51,22 @@ class AvdStudioBuilder:
         return self._studio
 
     def _add_inputs(self, inputs, parent):
-        for input_path, input_options in inputs.items():
-            # With input path "foo.bar", the variable name should be "bar"
-            input_var_name = input_path.split('.')[-1]
+        for var_path, input_options in inputs.items():
+            # With var_path "foo.bar", the variable name should be "<parent-name>-bar"
+            var_name = var_path.split('.')[-1]
+            studio_input_id = f"{parent['id']}-{var_name}"
 
             # We could get multiple inputs if the input is a group with nested inputs.
-            new_inputs = self._converter.to_studios(input_path, input_var_name)
+            new_inputs = self._converter.to_studios(avd_schema_path=var_path, studio_input_id=studio_input_id)
 
             # We can only have one input with a matching name.
             for new_input_id, new_input in new_inputs.items():
-                if new_input['name'] != input_var_name:
+                if new_input_id != studio_input_id:
                     continue
 
-                # If input path is more than just a var, we should add a data mapper to the studio template
-                if input_path != input_var_name:
-                    self._data_maps.append({"input": new_input_id, "avd_var": input_path})
+                # If var_path is more than just a var, we should add a data mapper to the studio template
+                if var_path != var_name:
+                    self._data_maps.append({"input": new_input_id, "avd_var": var_path})
 
                 if parent["type"] == "INPUT_FIELD_TYPE_GROUP":
                     parent["group_props"]["members"]["values"].append(new_input_id)
@@ -92,15 +93,20 @@ class AvdStudioBuilder:
                     "suggestedValues": tag_options.get("suggested_values", []),
                 }
                 tagger["columns"].append(column)
-                self._data_maps.append({"tag": tag_options["tag_label"], "avd_var": tag_path})
+                self._data_maps.append({
+                    "tag": tag_options["tag_label"],
+                    "avd_var": tag_path,
+                    "type": tag_options.get('type')
+                })
 
             self._input_layout.update({tagger_key: tagger})
 
     def _add_resolvers(self, resolvers, parent):
-        for resolver_name, resolver_options in resolvers.items():
-            resolver_key = f"{parent['id']}-resolver_{resolver_name}"
-            resolver_group_key = f"{parent['id']}-resolver_group_{resolver_name}"
-            resolver_group_name = f"{resolver_name}_group"
+        for resolver_short_name, resolver_options in resolvers.items():
+            resolver_name = f"resolver_{resolver_short_name}"
+            resolver_key = f"{parent['id']}-{resolver_name}"
+            resolver_group_key = f"{resolver_key}-{resolver_short_name}"
+            resolver_group_name = f"{resolver_short_name}"
             if resolver_options.get('prepopulated') and resolver_options.get('resolver_type') == "single":
                 display_mode = "RESOLVER_FIELD_DISPLAY_MODE_ALL"
             else:
@@ -117,7 +123,7 @@ class AvdStudioBuilder:
 
             resolver = {
                 "type": "INPUT_FIELD_TYPE_RESOLVER",
-                "label": resolver_options.get('display_name',resolver_name),
+                "label": resolver_options.get('display_name',resolver_short_name),
                 "id": resolver_key,
                 "name": resolver_name,
                 "description": resolver_options.get("description", ""),
@@ -173,9 +179,27 @@ import json
 from arista.tag.v2.services import TagAssignmentServiceStub
 from arista.tag.v2.services.gen_pb2 import TagAssignmentStreamRequest
 from arista.tag.v2.tag_pb2 import TagAssignment
+from arista.studio.v1.services import AssignedTagsServiceStub
+from arista.studio.v1.services.gen_pb2 import AssignedTagsRequest
+from tagsearch_python.tagsearch_pb2_grpc import TagSearchStub
+from tagsearch_python.tagsearch_pb2 import TagMatchRequestV2
 from webapp.v2.types import DeviceResolver
 
 DATA_MAPS = []
+
+def __get_studio_devices():
+    # First get the query string from the studio
+    get_req = AssignedTagsRequest()
+    get_req.key.workspace_id.value = ctx.studio.workspaceId
+    get_req.key.studio_id.value = ctx.studio.studioId
+    tsclient = ctx.getApiClient(AssignedTagsServiceStub)
+    tag = tsclient.GetOne(get_req)
+    query = tag.value.query.value
+    # Now try to search with this query to get the matching devices
+    tsclient = ctx.getApiClient(TagSearchStub)
+    search_req = TagMatchRequestV2(query=query, workspace_id=ctx.studio.workspaceId, topology_studio_request=True)
+    search_res = tsclient.GetTagMatchesV2(search_req)
+    return [match.device.device_id for match in search_res.matches] or query
 
 def __get_all_device_tags(device_id):
     get_all_req = TagAssignmentStreamRequest()
@@ -225,7 +249,8 @@ def __map_data(_data_maps, _input_data, _tag_data):
                 keys = _data_map["input"].split("-")
                 # First key in path would be "root" so we skip that
                 for key in keys[1:-1]:
-                    if key not in data_pointer:
+                    if data_pointer.get(key) is None:
+                        data_pointer = {}
                         break
                     data_pointer = data_pointer[key]
                 value = data_pointer.get(keys[-1])
@@ -233,6 +258,8 @@ def __map_data(_data_maps, _input_data, _tag_data):
             if "tag" in _data_map:
                 # Get value from _tag_data
                 value = _tag_data.get(_device, {}).get(_data_map["tag"])
+                if not (value is None) and _data_map.get("type") == "int":
+                    value = int(value)
 
             if (not value is None) and "avd_var" in _data_map:
                 # Set avd_var with value
@@ -241,10 +268,10 @@ def __map_data(_data_maps, _input_data, _tag_data):
                 for key in keys[:-1]:
                     data_pointer.setdefault(key, {})
                     data_pointer = data_pointer[key]
-                _input_data[_device][keys[-1]] = value
+                data_pointer[keys[-1]] = value
 
-# TODO Find a better way of getting all associated devices - currently we just rely on the topology, but a studio might not be associated with all devices
-_all_devices = ctx.topology.getDevices()
+_studio_devices = __get_studio_devices()
+_all_devices = [device for device in ctx.topology.getDevices() if device.id in _studio_devices]
 _this_hostname = ctx.device.hostName
 _tag_data = {}
 _input_data = {}
@@ -276,7 +303,8 @@ for _device in _all_devices:
                 'method': 'token',
                 'token_file': '/tmp/token'
             }
-        }
+        },
+        'node_type_keys': {'node_type_key': {'type': 'l3leaf'}},
     })
 
 __map_data(DATA_MAPS, _input_data, _tag_data)
@@ -337,5 +365,6 @@ if not _result:
     with _runner_result.stdout as _output:
         _result = _output.read()
 %>
+! ${f"{_input_data[_this_hostname]}"}
 ${_result}
 '''

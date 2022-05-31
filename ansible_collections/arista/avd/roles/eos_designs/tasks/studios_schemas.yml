@@ -62,8 +62,10 @@
   tags: [deploy, build, submit]
   ansible.builtin.set_fact:
     workspace_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
-    studio_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
+    # studio_uuid: "{{ lookup( 'password', '/dev/null length=32' ) | to_uuid }}"
     #studio_uuid: "b0bb0fa9-862f-5148-8fb6-b9b8e7621eb6"
+    #workspace_uuid: "3c92f9f7-0153-508f-962c-3ccb2537c2e3"
+    studio_uuid: "af6b623c-13ac-4c85-8241-51f14378a393"
   delegate_to: localhost
 
 - name: Create Workspace on CloudVision

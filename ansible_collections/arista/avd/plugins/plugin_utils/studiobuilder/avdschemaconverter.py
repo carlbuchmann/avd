@@ -3,7 +3,7 @@ __metaclass__ = type
 
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
 from deepmerge import always_merger
-import ansible_collections.arista.avd.plugins.plugin_utils.schema.studioschemaconverters as studioschemaconverters
+import ansible_collections.arista.avd.plugins.plugin_utils.studiobuilder.studioschemaconverters as studioschemaconverters
 
 
 class AvdSchemaConverter:
@@ -31,19 +31,19 @@ class AvdSchemaConverter:
                 "valid_values": studioschemaconverters.valid_values,
             }
 
-    def to_studios(self, avd_schema_path: str = None, avd_var_name: str = None):
+    def to_studios(self, avd_schema_path: str = None, studio_input_id: str = "root"):
         if avd_schema_path:
             subschema = avd_schema_path.split(".")
-            name = f"root-{avd_schema_path.replace('.', '-')}"
+            var_name = avd_schema_path.split(".")[-1]
         else:
             subschema = []
-            name = "root"
+            var_name = None
         schema = self._avdschema.subschema(subschema)
-        return self.convert(schema, self.studio_converters, name, avd_var_name)
+        return self.convert(input=schema, converters=self.studio_converters, id=studio_input_id, var_name=var_name)
 
-    def convert(self, input: dict, converters: dict, name: str = "root", var_name: str = ""):
-        output = {name: {"name": var_name, "id": name, "label": var_name}}
+    def convert(self, input: dict, converters: dict, id: str = "root", var_name: str = ""):
+        output = {id: {"name": var_name, "id": id, "label": var_name}}
         for key, value in input.items():
             if key in converters:
-                always_merger.merge(output, converters[key](self, value, name, input, converters))
+                always_merger.merge(output, converters[key](self, value, id, input, converters))
         return output

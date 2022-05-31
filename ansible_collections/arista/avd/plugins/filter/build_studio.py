@@ -71,16 +71,17 @@ test_studio_design = {
                 "pod_name": {
                     "tag_label": "POD_Name",
                 },
-                "node_type_key.nodes_groups.nodes.id": {
+                "node_type_key.defaults.id": {
                     "tag_label": "ID",
+                    "type": "int",
                 },
-                "node_bgp_as": {
+                "node_type_key.defaults.bgp_as": {
                     "tag_label": "BGP_AS",
                 },
                 "short_esi": {
                     "tag_label": "Short_ESI",
                 },
-                "node_type_key.node_groups.name": {
+                "node_type_key.defaults.mlag_group": {
                     "tag_label": "MLAG_Group",
                 },
             }
