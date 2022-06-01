@@ -10,7 +10,9 @@ test_studio_design = {
     "display_name": "my test studio",
     "description": "",
     "inputs": {
-        "fabric_name": {}
+        "fabric_name": {},
+        "bgp_peer_groups": {},
+        "p2p_uplinks_mtu": {},
     },
     "resolvers": {
         "dc_vars": {
@@ -21,7 +23,7 @@ test_studio_design = {
             "prepopulated": True,
             "layout": "hierarchical",
             "inputs": {
-                "vtep_vvtep_ip": {}
+                "mgmt_gateway": {},
             },
             "resolvers": {
                 "pod_vars": {
@@ -31,9 +33,7 @@ test_studio_design = {
                     "tag_label": "POD_Name",
                     "prepopulated": True,
                     "layout": "hierarchical",
-                    "inputs": {
-                        "evpn_short_esi_prefix": {}
-                    },
+                    "inputs": {},
                     "resolvers": {
                         "role_vars": {
                             "display_name": "Device Role Settings",
@@ -43,7 +43,18 @@ test_studio_design = {
                             "prepopulated": True,
                             "layout": "hierarchical",
                             "inputs": {
-                                "node_type_key.defaults.loopback_ipv4_pool": {}
+                                "node_type_key.defaults.loopback_ipv4_pool": {},
+                                "node_type_key.defaults.vtep_loopback_ipv4_pool": {},
+                                "node_type_key.defaults.bgp_defaults": {},
+                                "node_type_key.defaults.uplink_interfaces": {},
+                                "node_type_key.defaults.uplink_switches": {},
+                                "node_type_key.defaults.uplink_ipv4_pool": {},
+                                "node_type_key.defaults.mlag_interfaces": {},
+                                "node_type_key.defaults.mlag_peer_ipv4_pool": {},
+                                "node_type_key.defaults.mlag_peer_l3_ipv4_pool": {},
+                                "node_type_key.defaults.virtual_router_mac_address": {},
+                                "node_type_key.defaults.spanning_tree_priority": {},
+                                "node_type_key.defaults.spanning_tree_mode": {},
                             }
                         }
                     }
@@ -75,14 +86,22 @@ test_studio_design = {
                     "tag_label": "ID",
                     "type": "int",
                 },
+                "node_type_key.defaults.platform": {
+                    "tag_label": "Platform",
+                },
+                "node_type_key.defaults.mgmt_ip": {
+                    "tag_label": "Management_IP",
+                },
                 "node_type_key.defaults.bgp_as": {
                     "tag_label": "BGP_AS",
                 },
-                "short_esi": {
-                    "tag_label": "Short_ESI",
+                "node_type_key.defaults.uplink_switch_interfaces": {
+                    "tag_label": "Uplink_Switch_Interfaces",
+                    "type": "list",
                 },
-                "node_type_key.defaults.mlag_group": {
-                    "tag_label": "MLAG_Group",
+                "node_type_key.node_groups": {
+                    "tag_label": "Node_Group",
+                    "type": "node_group",
                 },
             }
         }

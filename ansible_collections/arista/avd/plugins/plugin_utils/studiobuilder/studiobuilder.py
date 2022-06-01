@@ -239,7 +239,20 @@ def __strip_and_resolve(_input, _device):
             return None
     return _input
 
-def __map_data(_data_maps, _input_data, _tag_data):
+def __node_groups(_data_maps, _input_data, _tag_data):
+    _node_groups = {}
+    for _device in sorted(_input_data):
+        for _data_map in _data_maps:
+            if "tag" in _data_map and _data_map.get("type") == "node_group":
+                value = _tag_data.get(_device, {}).get(_data_map["tag"])
+                if value is None:
+                    break
+                _node_groups.setdefault(value, {"nodes": {}})
+                _node_groups[value]["nodes"][_device] = {}
+                break
+    return _node_groups
+
+def __map_data(_data_maps, _input_data, _tag_data, _node_groups):
     _output = {}
     value = None
     for _device in _input_data:
@@ -255,17 +268,30 @@ def __map_data(_data_maps, _input_data, _tag_data):
                         break
                     data_pointer = data_pointer[key]
                 value = data_pointer.get(keys[-1])
+                if value is None:
+                    continue
 
             if "tag" in _data_map:
                 # Get value from _tag_data
                 value = _tag_data.get(_device, {}).get(_data_map["tag"])
-                if not (value is None) and _data_map.get("type") == "int":
+                if value is None:
+                    continue
+                if _data_map.get("type") == "int":
                     value = int(value)
+                elif _data_map.get("type") == "list":
+                    value = value.split(',')
+                elif _data_map.get("type") == "node_group":
+                    value = {str(value): _node_groups.get(value, {})}
 
             if (not value is None) and "avd_var" in _data_map:
                 # Set avd_var with value
                 data_pointer = _input_data[_device]
                 keys = _data_map["avd_var"].split(".")
+
+                # Hack to insert ex. "l3leaf" instead of "node_type_key"
+                if keys[0] == "node_type_key":
+                    keys[0] = _tag_data.get(_device, {}).get("Role", "node_type_key")
+
                 for key in keys[:-1]:
                     data_pointer.setdefault(key, {})
                     data_pointer = data_pointer[key]
@@ -304,13 +330,13 @@ for _device in _all_devices:
                 'method': 'token',
                 'token_file': '/tmp/token'
             }
-        },
-        'node_type_keys': {'node_type_key': {'type': 'l3leaf'}},
+        }
     })
 
-__map_data(DATA_MAPS, _input_data, _tag_data)
+_node_groups = __node_groups(DATA_MAPS, _input_data, _tag_data)
+__map_data(DATA_MAPS, _input_data, _tag_data, _node_groups)
 
-_fabric_name = ctx.studio.inputs.get('fabric_name',"no_fabric_name")
+_fabric_name = ctx.studio.inputs.get('fabric_name', "no_fabric_name")
 
 # Run Ansible AVD passing inventory, variables and playbook as arguments.
 _runner_result = ansible_runner.interface.run(
