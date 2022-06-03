@@ -27,9 +27,9 @@ class AvdStudioBuilder:
                 }
             }
         })
-        self._add_inputs(studio_design['inputs'], self._input_fields["root"])
         self._add_taggers(studio_design.get('taggers', {}), self._input_fields["root"])
         self._add_resolvers(studio_design.get('resolvers', {}), self._input_fields["root"])
+        self._add_inputs(studio_design['inputs'], self._input_fields["root"])
         self._set_template()
 
         self._studio = {
@@ -163,9 +163,9 @@ class AvdStudioBuilder:
             if parent["type"] == "INPUT_FIELD_TYPE_GROUP":
                 parent["group_props"]["members"]["values"].append(resolver_key)
 
-            self._add_inputs(resolver_options['inputs'], self._input_fields[resolver_group_key])
             self._add_taggers(resolver_options.get('taggers', {}), self._input_fields[resolver_group_key])
             self._add_resolvers(resolver_options.get('resolvers', {}), self._input_fields[resolver_group_key])
+            self._add_inputs(resolver_options['inputs'], self._input_fields[resolver_group_key])
 
     def _set_template(self):
         data_maps = self._data_maps

@@ -1,9 +1,0 @@
----
-- name: Create Studio Schemas
-  hosts: all
-  gather_facts: false
-  tasks:
-    - name: Generate Studios Schema
-      import_role:
-        name: arista.avd.eos_designs
-        tasks_from: studios_schemas.yml
