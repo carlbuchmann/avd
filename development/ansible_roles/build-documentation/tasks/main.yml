@@ -1,0 +1,15 @@
+---
+
+- name: find eos_cli_config_gen schema file
+  ansible.builtin.find:
+    paths: "{{ inventory_dir }}/../ansible_collections/arista/avd/roles/eos_cli_config_gen/vars/schemas/"
+  register: eos_cli_config_gen_schemas
+  tags: [eos_cli_config_gen]
+
+
+
+- name: create documentation for each schema
+  include_tasks: "eos_cli_config_gen.yml"
+  loop: "{{ eos_cli_config_gen_schemas.files }}"
+  loop_control:
+    loop_var: eos_cli_config_gen_schema_file

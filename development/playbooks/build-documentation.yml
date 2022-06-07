@@ -1,0 +1,12 @@
+---
+
+- name: Build AVD eos_desigsn and eos_cli_config_gen documenation from schemas
+  hosts: dev_host
+  connection: local
+  gather_facts: false
+
+  tasks:
+
+    - name: run CVP provisioning
+      import_role:
+         name: build-documentation

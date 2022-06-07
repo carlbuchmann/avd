@@ -1,0 +1,17 @@
+---
+
+- name: include eos_cli_schema_variable
+  include_vars: "{{ eos_cli_config_gen_schema_file.path }}"
+
+- name: set schema eos_cli_schema_variable
+  set_fact:
+    schema_var: "{{ eos_cli_config_gen_schema_file.path | basename | split('.') | first }}"
+
+# - name: debug
+#   debug:
+#     msg: "{{ eos_cli_config_gen_schema_file.path | basename | split('.') | first }}"
+
+- name: create documentation
+  template:
+    src: eos_cli_config_gen.j2
+    dest: "{{ inventory_dir }}/../ansible_collections/arista/avd/roles/eos_cli_config_gen/docs/{{ schema_var }}.md"

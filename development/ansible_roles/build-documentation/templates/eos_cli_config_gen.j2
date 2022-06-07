@@ -1,0 +1,16 @@
+# {{ schema_var }}
+
+{% if keys[schema_var].description is arista.avd.defined %}
+## Description
+
+{{ keys[schema_var].description }}
+{% endif %}
+
+## Variables
+
+{% for key, value in keys.items() recursive %}
+  {{ key }}
+{%     if keys[key].items is arista.avd.defined %}
+    {{ keys[key].items }}
+{%     endif%}
+{% endfor %}
