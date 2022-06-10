@@ -3,7 +3,7 @@ __metaclass__ = type
 
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.errors import AristaAvdError
 from ansible_collections.arista.avd.plugins.plugin_utils.schema.avdschema import AvdSchema
-
+import yaml
 
 class AvdToDocumentationSchemaConverter:
     '''
@@ -148,6 +148,12 @@ class AvdToDocumentationSchemaConverter:
             restrictions.append(f"Max Length: {schema['max_length']}")
         if schema.get('format'):
             restrictions.append(f"Format: {schema['format']}")
+        if schema.get('valid_values'):
+            restrictions.append("Valid Values:\n")
+            for valid_value in schema['valid_values']:
+                restrictions.append(f"- {valid_value}")
+        if schema.get('pattern'):
+            restrictions.append(f"Pattern: {schema['pattern']}")
 
         if restrictions:
             return "\n".join(restrictions)
@@ -163,76 +169,3 @@ class AvdToDocumentationSchemaConverter:
         if descriptions:
             return "\n".join(descriptions)
         return None
-
-    # def default(self, default, name, input):
-    #     if input['type'] == 'str':
-    #         return {name: {"string_props": {"default_value": str(default)}}}
-    #     if input['type'] == 'int':
-    #         return {name: {"integer_props": {"default_value": int(default)}}}
-    #     if input['type'] == 'bool':
-    #         return {name: {"boolean_props": {"default_value": bool(default)}}}
-
-    # def description(self, description, name, input):
-    #     return {name: {"description": ""}}
-
-    # def display_name(self, display_name, name, input):
-    #     return {name: {"label": display_name}}
-
-    # def format(self, format, name, input):
-    #     format_converters = {
-    #         "ipv4": "ip",
-    #         "ipv4_cidr": "cidr",
-    #         "ipv6": "ipv6",
-    #         "ipv6_cidr": "cidr",
-    #         "ip": "ip",
-    #         "cidr": "cidr",
-    #         "mac": "mac"
-    #     }
-    #     # Return the converted format or None
-    #     return {name: {"string_props": {"format": format_converters.get(format, None)}}}
-
-    # def required(self, required, name, input):
-    #     return {name: {"required": required}}
-
-    # def items(self, items, name, input):
-    #     if DEEPMERGE_IMPORT_ERROR:
-    #         return
-
-    #     item_name = f"{name}-item"
-    #     output = {name: {"collection_props": {"base_field_id": item_name}}}
-    #     always_merger.merge(output, self.convert_item(items, item_name, item_name))
-    #     return output
-
-    # def keys(self, keys, indentation):
-    #     if DEEPMERGE_IMPORT_ERROR:
-    #         return
-
-    #     output = []
-    #     for key, value in keys.items():
-    #         always_merger.merge(output, self.build_table_row(var_name=key, schema=value, indentation=indentation))
-    #     return output
-
-    # def max(self, max, name, input):
-    #     return {name: {"integer_props": {"range": f"{input.get('min','min')}..{max}"}}}
-
-    # def max_length(self, max_length, name, input):
-    #     return {name: {"string_props": {"length": f"{input.get('min_length','min')}..{max_length}"}}}
-
-    # def min(self, min, name, input):
-    #     return {name: {"integer_props": {"range": f"{min}..{input.get('max','max')}"}}}
-
-    # def min_length(self, min_length, name, input):
-    #     return {name: {"string_props": {"length": f"{min_length}..{input.get('max_length','max')}"}}}
-
-    # def pattern(self, pattern, name, input):
-    #     return {name: {"string_props": {"pattern": pattern}}}
-
-    # def primary_key(self, primary_key, name, input):
-    #     return {name: {"collection_props": {"key": primary_key}}}
-
-
-    # def valid_values(self, valid_values, name, input):
-    #     if input['type'] == 'int':
-    #         return {name: {"integer_props": {"static_options": {"values": valid_values}}}}
-    #     if input['type'] == 'str':
-    #         return {name: {"string_props": {"static_options": {"values": valid_values}}}}
