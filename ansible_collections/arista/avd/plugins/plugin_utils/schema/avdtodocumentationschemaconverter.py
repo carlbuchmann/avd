@@ -20,7 +20,7 @@ class AvdToDocumentationSchemaConverter:
         - variable: "  - bar"
           type: "String"
           required: "Yes, Unique"
-          description: "Display name of foo.bar\nDescription of foo.bar"
+          description: "Display name of foo.bar<br>Description of foo.bar"
       yaml:
         - 'foo:'
         - '  - bar: "<str>"'
@@ -35,22 +35,16 @@ class AvdToDocumentationSchemaConverter:
 
         for key in schema.get('keys', []):
             output[key] = {
-                "description": schema['keys'][key].get('description'),
+                "description": str(schema['keys'][key].get('description')).replace("\n","<br>"),
                 "table": self.build_table_row(var_name=key, schema=schema['keys'][key], indentation=""),
+                "yaml": self.build_yaml_row(var_name=key, schema=schema['keys'][key], indentation=""),
             }
 
         return output
 
     def build_table_row(self, var_name: str, schema: dict, indentation: str, parent_schema: dict = None, first_list_item_key: bool = False):
         output = []
-        # row = {
-        #     "variable": f"{indentation}{var_name}",
-        #     "type": self.type(schema),
-        #     "required": self.required(schema),
-        #     "default": self.default(schema),
-        #     "restrictions": self.restrictions(schema),
-        #     "description": self.description(schema, indentation)
-        # }
+
         if first_list_item_key:
             row_indentation = f"{indentation[:-2]}-{indentation[-1]}"
         else:
@@ -84,6 +78,42 @@ class AvdToDocumentationSchemaConverter:
 
         return output
 
+    def build_yaml_row(self, var_name: str, schema: dict, indentation: str, first_list_item_key: bool = False):
+        output = []
+
+        if first_list_item_key:
+            row_indentation = f"{indentation[:-2]}-{indentation[-1]}"
+        else:
+            row_indentation = indentation
+
+        row = f"{row_indentation}{var_name}:"
+        var_type = schema.get('type')
+        if var_type not in ['list', 'dict']:
+            row = f"{row} <{var_type}>"
+
+        output.append(row)
+
+        schema_keys = schema.get('keys')
+        schema_items = schema.get('items')
+        if schema_keys:
+            for key, value in schema_keys.items():
+                rows = self.build_yaml_row(var_name=key, schema=value, indentation=f"{indentation}  ")
+                output.extend(rows)
+        elif schema_items:
+            schema_items_type = schema_items.get('type')
+            if schema_items_type == "dict":
+                schema_keys = schema_items.get('keys', [])
+                first = True
+                for key, value in schema_keys.items():
+                    rows = self.build_yaml_row(var_name=key, schema=value, indentation=f"{indentation}    ", first_list_item_key=first)
+                    output.extend(rows)
+                    first = False
+            else:
+                row = f"{indentation}  - <{schema_items_type}>"
+                output.append(row)
+
+        return output
+
     def type(self, schema: dict):
         type_converters = {
             "str": "String",
@@ -112,17 +142,17 @@ class AvdToDocumentationSchemaConverter:
 
     def items(self, schema: dict, indentation: str):
         output = []
-        items_schema = schema.get('items', {})
-        schema_items_type = items_schema.get('type')
+        schema_items = schema.get('items', {})
+        schema_items_type = schema_items.get('type')
         if schema_items_type == "dict":
-            schema_keys = items_schema.get('keys', [])
+            schema_keys = schema_items.get('keys', [])
             first = True
             for key, value in schema_keys.items():
-                rows = self.build_table_row(var_name=key, schema=value, indentation=f"{indentation}  ", parent_schema=schema, first_list_item_key=first)
+                rows = self.build_table_row(var_name=key, schema=value, indentation=f"{indentation}    ", parent_schema=schema, first_list_item_key=first)
                 output.extend(rows)
                 first = False
         else:
-            output = self.build_table_row(var_name=f"<{schema_items_type}>", schema=items_schema, indentation=f"{indentation}  ", parent_schema=schema, first_list_item_key=True)
+            output = self.build_table_row(var_name=f"<{schema_items_type}>", schema=schema_items, indentation=f"{indentation}    ", parent_schema=schema, first_list_item_key=True)
         return output
 
     def required(self, schema: dict, var_name: str, parent_schema: dict):
@@ -149,14 +179,14 @@ class AvdToDocumentationSchemaConverter:
         if schema.get('format'):
             restrictions.append(f"Format: {schema['format']}")
         if schema.get('valid_values'):
-            restrictions.append("Valid Values:\n")
+            restrictions.append("Valid Values:")
             for valid_value in schema['valid_values']:
                 restrictions.append(f"- {valid_value}")
         if schema.get('pattern'):
             restrictions.append(f"Pattern: {schema['pattern']}")
 
         if restrictions:
-            return "\n".join(restrictions)
+            return "<br>".join(restrictions)
         return None
 
     def description(self, schema: dict, indentation: str):
@@ -164,8 +194,8 @@ class AvdToDocumentationSchemaConverter:
         if schema.get("display_name"):
             descriptions.append(schema["display_name"])
         if schema.get("description") and indentation:
-            descriptions.append(schema["description"])
+            descriptions.append(str(schema["description"]).replace("\n","<br>"))
 
         if descriptions:
-            return "\n".join(descriptions)
+            return "<br>".join(descriptions)
         return None
