@@ -1,0 +1,17 @@
+---
+- name: Create Documentation
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Import AVD eos_designs schema
+      tags: [eos_designs]
+      ansible.builtin.set_fact:
+        schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
+      vars:
+        schema_files: "{{ query('ansible.builtin.fileglob', playbook_dir ~ '/../roles/eos_designs/vars/schemas/*.schema.yml') }}"
+
+    - name: Write Documentation Schema to file
+      tags: [eos_designs]
+      ansible.builtin.copy:
+        content: "{{ schema | arista.avd.convert_schema(type='documentation') | to_nice_yaml(indent=2) }}"
+        dest: "{{ lookup('env', 'PWD') }}/output_documentation.yml"
