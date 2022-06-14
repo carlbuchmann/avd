@@ -22,13 +22,18 @@ class ActionModule(ActionBase):
         else:
             raise AnsibleActionFail("The argument 'schema' must be set")
 
+        mode = self._task.args.get("mode", "warning")
+
         error_counter = 0
         validation_errors = AvdSchema(schema).validate(task_vars)
         for validation_error in validation_errors:
             error_counter += 1
             if isinstance(validation_error, AristaAvdError):
-                Display().error(f"[{task_vars['inventory_hostname']}]: {validation_error}", False)
+                if mode == "error":
+                    Display().error(f"[{task_vars['inventory_hostname']}]: {validation_error}", False)
+                else:
+                    Display().warning(f"[{task_vars['inventory_hostname']}]: {validation_error}", False)
         if error_counter:
             result['msg'] = f"{error_counter} errors found during schema validation of input vars."
-            result['failed'] = True
+            result['failed'] = (mode == "error")
         return result

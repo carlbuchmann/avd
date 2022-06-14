@@ -34,18 +34,11 @@
   vars:
     filename: "{{ structured_dir }}/{{ inventory_hostname }}.{{ avd_structured_config_file_format }}"
 
-- name: Import AVD eos_cli_config_gen schema
-  tags: [never, validate]
-  run_once: true
-  set_fact:
-    schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
-  vars:
-    schema_files: "{{ query('ansible.builtin.fileglob', 'vars/schemas/*.schema.yml') }}"
-
 - name: Validate input vars according to AVD eos_cli_config_gen schema
-  tags: [never, validate]
+  tags: [validate, never]
   arista.avd.validate:
-    schema: "{{ schema }}"
+    schema: "{{ lookup('ansible.builtin.file', schema_path) | from_yaml }}"
+    mode: "error"
   delegate_to: localhost
 
 - name: Generate eos intended configuration
