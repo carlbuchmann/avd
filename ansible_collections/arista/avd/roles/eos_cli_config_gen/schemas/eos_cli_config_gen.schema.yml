@@ -1,0 +1,77 @@
+allow_other_keys: true
+keys:
+  access_lists:
+    description: 'AVD currently supports 2 different data models for extended ACLs:
+
+
+      - The legacy `access_lists` data model, for compatibility with existing deployments
+
+      - The improved `ip_access_lists` data model, for access to more EOS features
+
+
+      Both data models can coexists without conflicts, as different keys are used:
+      `access_lists` vs `ip_access_lists`.
+
+      Access list names must be unique.
+
+
+      The legacy data model supports simplified ACL definition with `sequence_number`
+      to `action_string` mapping:
+
+      '
+    display_name: IP Extended Access-Lists
+    items:
+      keys:
+        counters_per_entry:
+          type: bool
+        name:
+          display_name: access_list_name
+          required: true
+          type: str
+        sequence_numbers:
+          items:
+            keys:
+              action:
+                display_name: action as string
+                required: true
+                type: str
+              sequence:
+                display_name: sequence_id
+                required: true
+                type: int
+            type: dict
+          primary_key: sequence
+          required: true
+          type: list
+      type: dict
+    primary_key: name
+    type: list
+  ipv6_standard_access_lists:
+    display_name: IPv6 Standard Access-Lists
+    items:
+      keys:
+        counters_per_entry:
+          type: bool
+        name:
+          display_name: ipv6_access_list_name
+          required: true
+          type: str
+        sequence_numbers:
+          items:
+            keys:
+              action:
+                display_name: action as string
+                required: true
+                type: str
+              sequence:
+                display_name: sequence_id
+                required: true
+                type: int
+            type: dict
+          primary_key: sequence
+          required: true
+          type: list
+      type: dict
+    primary_key: name
+    type: list
+type: dict

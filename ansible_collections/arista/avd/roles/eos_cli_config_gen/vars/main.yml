@@ -1,0 +1,13 @@
+# Schema folders
+# Main schemas folder
+schema_dir_name: "schemas"
+schema_dir: "{{ role_path }}/{{ schema_dir_name }}"
+# Main Schema file
+schema_file_name: "{{ role_name }}.schema.yml"
+schema_path: "{{ schema_dir }}/{{ schema_file_name }}"
+# Schema fragments folder
+schema_fragments_dir_name: "schema_fragments"
+schema_fragments_dir: "{{ schema_dir }}/{{ schema_fragments_dir_name }}"
+# Schema fragments glob
+schema_fragments_file_glob: "*.schema.yml"
+schema_fragments_glob: "{{ schema_fragments_dir }}/{{ schema_fragments_file_glob }}"

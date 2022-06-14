@@ -1,0 +1,9 @@
+---
+- name: Gather AVD Schema Fragments for eos_cli_config_gen
+  tags: [eos_cli_config_gen]
+  run_once: true
+  ansible.builtin.copy:
+    content: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | ansible.builtin.combine(recursive=True) | to_nice_yaml(indent=2) }}"
+    dest: "{{ schema_path }}"
+  vars:
+    schema_files: "{{ query('ansible.builtin.fileglob', schema_fragments_glob) }}"
