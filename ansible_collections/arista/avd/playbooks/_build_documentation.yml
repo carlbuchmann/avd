@@ -1,24 +1,68 @@
 ---
+
 - name: Create Documentation
   hosts: localhost
   gather_facts: false
   tasks:
+
     - name: Import AVD eos_designs schema
       tags: [eos_designs]
       ansible.builtin.set_fact:
-        schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
+        eos_designs_schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
       vars:
-        schema_files: "{{ query('ansible.builtin.fileglob', playbook_dir ~ '/../roles/eos_designs/vars/schemas/*.schema.yml') }}"
+        schema_files: "{{ query('ansible.builtin.fileglob', playbook_dir ~ '/../roles/eos_designs/schemas/schema_fragments/*.schema.yml') }}"
+
+    - name: Convert eos_designs schema
+      tags: [eos_designs]
+      ansible.builtin.set_fact:
+        eos_designs_schemas: "{{ eos_designs_schema | arista.avd.convert_schema(type='documentation') }}"
 
     - name: Write Documentation Schema to file
-      tags: [debug, eos_designs]
+      tags: [debug, never, eos_designs]
       ansible.builtin.copy:
-        content: "{{ schema | arista.avd.convert_schema(type='documentation') | to_nice_yaml(indent=2) }}"
-        dest: "{{ lookup('env', 'PWD') }}/output_documentation.yml"
+        content: "{{ eos_designs_schemas | to_nice_yaml(indent=2) }}"
+        dest: "{{ lookup('env', 'PWD') }}/eos_designs_output_documentation.yml"
 
-    # - name: Write Documentation file
-    #   tags: [eos_designs]
-    #   template:
-    #     dest: something
-    #   vars:
-    #     documentation_schema: "{{ schema | arista.avd.convert_schema(type='documentation') }}"
+    - name: Import AVD eos_cli_config_gen schema
+      tags: [eos_cli_config_gen]
+      ansible.builtin.set_fact:
+        eos_cli_config_gen_schema: "{{ query('ansible.builtin.file', *schema_files) | map('from_yaml') | combine(recursive=True) }}"
+      vars:
+        schema_files: "{{ query('ansible.builtin.fileglob', playbook_dir ~ '/../roles/eos_cli_config_gen/schemas/schema_fragments/*.schema.yml') }}"
+
+    - name: Convert eos_cli_config_gen schema
+      tags: [eos_cli_config_gen]
+      ansible.builtin.set_fact:
+        eos_cli_config_gen_schemas: "{{ eos_cli_config_gen_schema | arista.avd.convert_schema(type='documentation') }}"
+
+    - name: Write Documentation Schema to file
+      tags: [debug, never, eos_cli_config_gen]
+      ansible.builtin.copy:
+        content: "{{ eos_cli_config_gen_schemas | to_nice_yaml(indent=2) }}"
+        dest: "{{ lookup('env', 'PWD') }}/eos_cli_config_gen_output_documentation.yml"
+
+    - name: debug output
+      tags: [always]
+      debug:
+        msg: "{{ schema_keys }}"
+      loop: "{{ eos_cli_config_gen_schemas | dict2items }}"
+      loop_control:
+        loop_var: schema_keys
+
+    - name: Output eos_designs Documentation
+      tags: [always]
+      template:
+        src: avd_schema_documentation.j2
+        dest:  "{{ playbook_dir ~ '/../roles/eos_designs/docs/' ~ schema_keys.key ~ '.md'  }}"
+      loop: "{{ eos_designs_schemas | dict2items }}"
+      loop_control:
+        loop_var: schema_keys
+
+    - name: Output eos_cli_config_gen Documentation
+      tags: [always]
+      template:
+        src: avd_schema_documentation.j2
+        dest:  "{{ playbook_dir ~ '/../roles/eos_cli_config_gen/docs/' ~ schema_keys.key ~ '.md'  }}"
+      loop: "{{ eos_cli_config_gen_schemas | dict2items }}"
+      loop_control:
+        loop_var: schema_keys
