@@ -1,0 +1,17 @@
+# p2p_uplinks_mtu
+
+## Description
+
+None
+
+## Variables
+
+| Variable | Type | Required | Default | Value Restrictions | Description |
+| -------- | ---- | -------- | ------- | ------------------ | ----------- |
+| p2p_uplinks_mtu | Integer |  | 9000 |  | Point to Point Links MTU |
+
+## YAML
+
+```yaml
+p2p_uplinks_mtu: <int>
+```
