@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| isis_default_is_type | String |  | level-2 | Valid Values:<br>- level-1-2<br>- level-1<br>- level-2 | ISIS Default IS Type |
+| <pre>isis_default_is_type | String |  | level-2 | Valid Values:<br>- level-1-2<br>- level-1<br>- level-2 | ISIS Default IS Type |
 
 ## YAML
 

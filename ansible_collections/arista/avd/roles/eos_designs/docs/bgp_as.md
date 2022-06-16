@@ -8,7 +8,7 @@ AS number to use to configure overlay when "overlay_routing_protocol" == IBGP
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| bgp_as | String |  |  |  | BGP AS |
+| <pre>bgp_as | String |  |  |  | BGP AS |
 
 ## YAML
 

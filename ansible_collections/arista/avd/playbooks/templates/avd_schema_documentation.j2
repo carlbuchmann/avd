@@ -9,7 +9,7 @@
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
 {% for item in schema_keys.value.table %}
-| {{ item.variable }} | {{ item.type }} | {{ item.required | arista.avd.default }} | {{ item.default | arista.avd.default }} | {{ item.restrictions | arista.avd.default }} | {{ item.description | arista.avd.default }} |
+| <pre>{{ item.variable }} | {{ item.type }} | {{ item.required | arista.avd.default }} | {{ item.default | arista.avd.default }} | {{ item.restrictions | arista.avd.default }} | {{ item.description | arista.avd.default }} |
 {% endfor %}
 
 ## YAML

@@ -8,7 +8,7 @@ Enable VPN import pruning (Min. EOS 4.24.2F)<br>The Route Target extended commun
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_import_pruning | Boolean |  | False |  | EVPN Import Pruning |
+| <pre>evpn_import_pruning | Boolean |  | False |  | EVPN Import Pruning |
 
 ## YAML
 

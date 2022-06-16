@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| p2p_uplinks_mtu | Integer |  | 9000 |  | Point to Point Links MTU |
+| <pre>p2p_uplinks_mtu | Integer |  | 9000 |  | Point to Point Links MTU |
 
 ## YAML
 

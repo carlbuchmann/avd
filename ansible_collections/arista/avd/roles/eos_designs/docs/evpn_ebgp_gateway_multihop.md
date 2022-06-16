@@ -8,7 +8,7 @@ Default of 15, considering a large value to avoid BGP reachability issues in ver
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_ebgp_gateway_multihop | Integer |  | 15 |  | EVPN Gateway EBGP Multihop |
+| <pre>evpn_ebgp_gateway_multihop | Integer |  | 15 |  | EVPN Gateway EBGP Multihop |
 
 ## YAML
 

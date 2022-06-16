@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| underlay_ospf_bfd_enable | Boolean |  | False |  | Enable Underlay OSPF BFD |
+| <pre>underlay_ospf_bfd_enable | Boolean |  | False |  | Enable Underlay OSPF BFD |
 
 ## YAML
 

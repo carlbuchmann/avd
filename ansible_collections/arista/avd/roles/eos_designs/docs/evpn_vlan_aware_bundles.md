@@ -8,7 +8,7 @@ Enable vlan aware bundles for EVPN MAC-VRF
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_vlan_aware_bundles | Boolean |  | False |  | EVPN VLAN-Aware Bundles |
+| <pre>evpn_vlan_aware_bundles | Boolean |  | False |  | EVPN VLAN-Aware Bundles |
 
 ## YAML
 

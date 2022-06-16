@@ -8,7 +8,7 @@ Configure prefix for "short_esi" values
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_short_esi_prefix | String |  | 0000:0000: |  | EVPN Short ESI Prefix |
+| <pre>evpn_short_esi_prefix | String |  | 0000:0000: |  | EVPN Short ESI Prefix |
 
 ## YAML
 

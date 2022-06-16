@@ -8,10 +8,10 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| isis_ti_lfa | Dictionary |  |  |  | ISIS TI-LFA |
-|   enabled | Boolean |  | False |  |  |
-|   protection | String |  |  | Valid Values:<br>- link<br>- node |  |
-|   local_convergence_delay | Integer |  | 10000 |  | Local convergence delay in mpls |
+| <pre>isis_ti_lfa | Dictionary |  |  |  | ISIS TI-LFA |
+| <pre>  enabled | Boolean |  | False |  |  |
+| <pre>  protection | String |  |  | Valid Values:<br>- link<br>- node |  |
+| <pre>  local_convergence_delay | Integer |  | 10000 |  | Local convergence delay in mpls |
 
 ## YAML
 
