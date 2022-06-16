@@ -41,16 +41,8 @@
         content: "{{ eos_cli_config_gen_schemas | to_nice_yaml(indent=2) }}"
         dest: "{{ lookup('env', 'PWD') }}/eos_cli_config_gen_output_documentation.yml"
 
-    - name: debug output
-      tags: [always]
-      debug:
-        msg: "{{ schema_keys }}"
-      loop: "{{ eos_cli_config_gen_schemas | dict2items }}"
-      loop_control:
-        loop_var: schema_keys
-
     - name: Output eos_designs Documentation
-      tags: [always]
+      tags: [eos_designs]
       template:
         src: avd_schema_documentation.j2
         dest:  "{{ playbook_dir ~ '/../roles/eos_designs/docs/' ~ schema_keys.key ~ '.md'  }}"
@@ -59,7 +51,7 @@
         loop_var: schema_keys
 
     - name: Output eos_cli_config_gen Documentation
-      tags: [always]
+      tags: [eos_cli_config_gen]
       template:
         src: avd_schema_documentation.j2
         dest:  "{{ playbook_dir ~ '/../roles/eos_cli_config_gen/docs/' ~ schema_keys.key ~ '.md'  }}"
