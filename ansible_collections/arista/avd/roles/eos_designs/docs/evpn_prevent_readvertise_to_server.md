@@ -8,7 +8,7 @@ Configure route-map on eBGP sessions towards route-servers, where prefixes with 
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_prevent_readvertise_to_server | Boolean |  | False |  | EVPN Prevent Readvertise to Server |
+| <code>evpn_prevent_readvertise_to_server</code>| Boolean |  | False |  | EVPN Prevent Readvertise to Server |
 
 ## YAML
 

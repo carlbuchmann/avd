@@ -8,8 +8,8 @@ Enable PTP on all infrastructure links
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| uplink_ptp | Dictionary |  |  |  | Uplink PTP |
-| &nbsp;&nbsp;enable | Boolean |  | False |  |  |
+| <code>uplink_ptp</code>| Dictionary |  |  |  | Uplink PTP |
+| <code>&nbsp;&nbsp;enable</code>| Boolean |  | False |  |  |
 
 ## YAML
 

@@ -8,7 +8,7 @@ Disable IGMP snooping at fabric level.<br>If set, it overrides per vlan settings
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| default_igmp_snooping_enabled | Boolean |  | True |  | Default IGMP Snooping enabled |
+| <code>default_igmp_snooping_enabled</code>| Boolean |  | True |  | Default IGMP Snooping enabled |
 
 ## YAML
 

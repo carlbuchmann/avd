@@ -8,7 +8,7 @@ Maximum Paths for BGP multi-path
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| bgp_maximum_paths | Integer |  | 4 |  |  |
+| <code>bgp_maximum_paths</code>| Integer |  | 4 |  |  |
 
 ## YAML
 

@@ -8,7 +8,7 @@ POD Name, only used in Fabric Documentation | Optional, fallback to dc_name and 
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| pod_name | String |  |  |  | POD Name |
+| <code>pod_name</code>| String |  |  |  | POD Name |
 
 ## YAML
 

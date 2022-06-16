@@ -8,7 +8,7 @@ Enable Route Target Membership Constraint Address Family on EVPN overlay BGP pee
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_overlay_bgp_rtc | Boolean |  | False |  | EVPN Overlay BGP RTC |
+| <code>evpn_overlay_bgp_rtc</code>| Boolean |  | False |  | EVPN Overlay BGP RTC |
 
 ## YAML
 

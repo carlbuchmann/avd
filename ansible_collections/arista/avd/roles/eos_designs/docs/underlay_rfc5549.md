@@ -8,7 +8,7 @@ Point to Point Underlay with RFC 5549(eBGP), i.e. IPv6 Unnumbered<br>Requires "u
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| underlay_rfc5549 | Boolean |  | False |  | Enable RFC5549 in Underlay |
+| <code>underlay_rfc5549</code>| Boolean |  | False |  | Enable RFC5549 in Underlay |
 
 ## YAML
 

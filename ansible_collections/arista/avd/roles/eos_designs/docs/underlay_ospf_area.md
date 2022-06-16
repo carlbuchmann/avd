@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| underlay_ospf_area | String |  | 0.0.0.0 | Format: ipv4 | Underlay OSPF Area |
+| <code>underlay_ospf_area</code>| String |  | 0.0.0.0 | Format: ipv4 | Underlay OSPF Area |
 
 ## YAML
 

@@ -8,7 +8,7 @@ QOS Profile assigned on all infrastructure links
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| p2p_uplinks_qos_profile | String |  |  |  | P2P Uplinks QoS Profile |
+| <code>p2p_uplinks_qos_profile</code>| String |  |  |  | P2P Uplinks QoS Profile |
 
 ## YAML
 

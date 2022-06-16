@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| underlay_ospf_max_lsa | Integer |  | 12000 |  | Underlay OSPF Max LSA |
+| <code>underlay_ospf_max_lsa</code>| Integer |  | 12000 |  | Underlay OSPF Max LSA |
 
 ## YAML
 

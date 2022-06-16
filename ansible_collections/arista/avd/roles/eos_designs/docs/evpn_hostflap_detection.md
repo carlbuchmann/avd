@@ -8,11 +8,11 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_hostflap_detection | Dictionary |  |  |  | EVPN Host Flapping Settings |
-| &nbsp;&nbsp;enabled | Boolean |  | True |  | If set to false it will disable EVPN host-flap detection |
-| &nbsp;&nbsp;threshold | Integer |  | 5 |  | Minimum number of MAC moves that indicate a MAC duplication issue |
-| &nbsp;&nbsp;window | Integer |  | 180 |  | Time (in seconds) to detect a MAC duplication issue |
-| &nbsp;&nbsp;expiry_timeout | Integer |  |  |  | Time (in seconds) to purge a MAC duplication issue |
+| <code>evpn_hostflap_detection</code>| Dictionary |  |  |  | EVPN Host Flapping Settings |
+| <code>&nbsp;&nbsp;enabled</code>| Boolean |  | True |  | If set to false it will disable EVPN host-flap detection |
+| <code>&nbsp;&nbsp;threshold</code>| Integer |  | 5 |  | Minimum number of MAC moves that indicate a MAC duplication issue |
+| <code>&nbsp;&nbsp;window</code>| Integer |  | 180 |  | Time (in seconds) to detect a MAC duplication issue |
+| <code>&nbsp;&nbsp;expiry_timeout</code>| Integer |  |  |  | Time (in seconds) to purge a MAC duplication issue |
 
 ## YAML
 

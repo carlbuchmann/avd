@@ -8,7 +8,7 @@ IP Address used as Virtual VTEP. Will be configured as secondary IP on loopback1
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| vtep_vvtep_ip | String |  |  | Format: ipv4_cidr | Virtual VTEP IP |
+| <code>vtep_vvtep_ip</code>| String |  |  | Format: ipv4_cidr | Virtual VTEP IP |
 
 ## YAML
 

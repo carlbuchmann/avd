@@ -8,7 +8,7 @@ Default of 3, the recommended value for a 3 stage spine and leaf topology.<br>Se
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| evpn_ebgp_multihop | Integer |  | 3 |  | EVPN EBGP Multihop |
+| <code>evpn_ebgp_multihop</code>| Integer |  | 3 |  | EVPN EBGP Multihop |
 
 ## YAML
 

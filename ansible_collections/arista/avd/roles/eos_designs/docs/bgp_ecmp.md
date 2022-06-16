@@ -8,7 +8,7 @@ Maximum ECMP for BGP multi-path
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| bgp_ecmp | Integer |  |  |  |  |
+| <code>bgp_ecmp</code>| Integer |  |  |  |  |
 
 ## YAML
 
