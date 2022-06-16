@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>isis_area_id | String |  | 49.0001 |  | Underlay ISIS Area |
+| isis_area_id | String |  | 49.0001 |  | Underlay ISIS Area |
 
 ## YAML
 

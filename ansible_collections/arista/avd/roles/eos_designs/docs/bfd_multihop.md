@@ -8,10 +8,10 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>bfd_multihop | Dictionary |  |  |  | BFD Multihop tunning |
-| <pre>  interval | Integer |  | 300 |  |  |
-| <pre>  min_rx | Integer |  | 300 |  |  |
-| <pre>  multiplier | Integer |  | 3 |  |  |
+| bfd_multihop | Dictionary |  |  |  | BFD Multihop tunning |
+| &nbsp;&nbsp;interval | Integer |  | 300 |  |  |
+| &nbsp;&nbsp;min_rx | Integer |  | 300 |  |  |
+| &nbsp;&nbsp;multiplier | Integer |  | 3 |  |  |
 
 ## YAML
 

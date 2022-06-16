@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>isis_advertise_passive_only | Boolean |  | False |  | ISIS Advertise Passive Only |
+| isis_advertise_passive_only | Boolean |  | False |  | ISIS Advertise Passive Only |
 
 ## YAML
 

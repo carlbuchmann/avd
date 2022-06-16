@@ -8,7 +8,7 @@ Optional DC Name, only used in SNMP location and Fabric Documentation.<br>Recomm
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>dc_name | String |  |  |  | DC Name |
+| dc_name | String |  |  |  | DC Name |
 
 ## YAML
 

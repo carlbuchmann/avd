@@ -8,7 +8,7 @@
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>overlay_routing_protocol | String |  | ebgp | Valid Values:<br>- ebgp<br>- ibgp<br>- BGP |  |
+| overlay_routing_protocol | String |  | ebgp | Valid Values:<br>- ebgp<br>- ibgp<br>- BGP |  |
 
 ## YAML
 

@@ -8,7 +8,7 @@ Fabric Name, required to match Ansible Group name covering all devices in the Fa
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>fabric_name | String | Required |  |  | Fabric Name |
+| fabric_name | String | Required |  |  | Fabric Name |
 
 ## YAML
 

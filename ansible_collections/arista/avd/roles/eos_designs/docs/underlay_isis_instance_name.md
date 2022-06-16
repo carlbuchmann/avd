@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>underlay_isis_instance_name | String |  | EVPN_UNDERLAY |  | Underlay ISIS Instance Name |
+| underlay_isis_instance_name | String |  | EVPN_UNDERLAY |  | Underlay ISIS Instance Name |
 
 ## YAML
 

@@ -8,28 +8,28 @@ Leverage an Arista EOS switch to generate the encrypted password using the corre
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>bgp_peer_groups | Dictionary |  |  |  | BGP peer group names and encrypted password |
-| <pre>  ipv4_underlay_peers | Dictionary |  |  |  |  |
-| <pre>    name | String |  | IPv4-UNDERLAY-PEERS |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  mlag_ipv4_underlay_peer | Dictionary |  |  |  |  |
-| <pre>    name | String |  | MLAG-IPv4-UNDERLAY-PEER |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  evpn_overlay_peers | Dictionary |  |  |  |  |
-| <pre>    name | String |  | EVPN-OVERLAY-PEERS |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  evpn_overlay_core | Dictionary |  |  |  |  |
-| <pre>    name | String |  | EVPN-OVERLAY-CORE |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  IPv4_UNDERLAY_PEERS | Dictionary |  |  |  |  |
-| <pre>    name | String |  | IPv4-UNDERLAY-PEERS |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  MLAG_IPv4_UNDERLAY_PEER | Dictionary |  |  |  |  |
-| <pre>    name | String |  | MLAG-IPv4-UNDERLAY-PEER |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
-| <pre>  EVPN_OVERLAY_PEERS | Dictionary |  |  |  |  |
-| <pre>    name | String |  | EVPN-OVERLAY-PEERS |  |  |
-| <pre>    password | String |  |  |  | Encrypted Password |
+| bgp_peer_groups | Dictionary |  |  |  | BGP peer group names and encrypted password |
+| &nbsp;&nbsp;ipv4_underlay_peers | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | IPv4-UNDERLAY-PEERS |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;mlag_ipv4_underlay_peer | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | MLAG-IPv4-UNDERLAY-PEER |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;evpn_overlay_peers | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | EVPN-OVERLAY-PEERS |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;evpn_overlay_core | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | EVPN-OVERLAY-CORE |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;IPv4_UNDERLAY_PEERS | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | IPv4-UNDERLAY-PEERS |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;MLAG_IPv4_UNDERLAY_PEER | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | MLAG-IPv4-UNDERLAY-PEER |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
+| &nbsp;&nbsp;EVPN_OVERLAY_PEERS | Dictionary |  |  |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;name | String |  | EVPN-OVERLAY-PEERS |  |  |
+| &nbsp;&nbsp;&nbsp;&nbsp;password | String |  |  |  | Encrypted Password |
 
 ## YAML
 

@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>underlay_ospf_process_id | Integer |  | 100 |  | Underlay OSPF Process ID |
+| underlay_ospf_process_id | Integer |  | 100 |  | Underlay OSPF Process ID |
 
 ## YAML
 

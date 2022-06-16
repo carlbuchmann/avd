@@ -8,7 +8,7 @@ None
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>mgmt_gateway | String | Required |  | Format: ipv4 | OOB Management Gateway IP |
+| mgmt_gateway | String | Required |  | Format: ipv4 | OOB Management Gateway IP |
 
 ## YAML
 

@@ -8,7 +8,7 @@ Customizable overlay loopback description
 
 | Variable | Type | Required | Default | Value Restrictions | Description |
 | -------- | ---- | -------- | ------- | ------------------ | ----------- |
-| <pre>overlay_loopback_description | String |  |  |  |  |
+| overlay_loopback_description | String |  |  |  |  |
 
 ## YAML
 
