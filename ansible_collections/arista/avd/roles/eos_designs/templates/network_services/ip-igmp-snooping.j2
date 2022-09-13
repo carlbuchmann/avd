@@ -24,7 +24,7 @@ ip_igmp_snooping:
 {%                         set svi_igmp_snooping_querier_enabled = true %}
 {%                     endif %}
 {%                 endif %}
-{%                 if svi_igmp_snooping_querier_enabled is arista.avd.defined %}
+{%                 if svi_igmp_snooping_querier_enabled is arista.avd.defined(true) %}
 {%                     set svi_igmp_snooping_querier_source_address = svi.igmp_snooping_querier.source_address | arista.avd.default(
                                                                       tenant.igmp_snooping_querier.source_address,
                                                                       switch.router_id) %}
@@ -39,8 +39,8 @@ ip_igmp_snooping:
 {%                     if svi_igmp_snooping_querier_enabled is arista.avd.defined and switch.uplink_type is arista.avd.defined("p2p") %}
       querier:
         enabled: {{ svi_igmp_snooping_querier_enabled }}
-        address: "{{ svi_igmp_snooping_querier_source_address }}"
-        version: {{ svi_igmp_snooping_querier_version }}
+        address: "{{ svi_igmp_snooping_querier_source_address | arista.avd.default }}"
+        version: {{ svi_igmp_snooping_querier_version | arista.avd.default }}
 {%                     endif %}
 {%                 endif %}
 {%             endfor %}

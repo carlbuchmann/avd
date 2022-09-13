@@ -353,7 +353,7 @@ ip_igmp_snooping:
     3:
       querier:
         enabled: false
-        address: 192.168.255.1
+        address: ''
     101:
       querier:
         enabled: true
