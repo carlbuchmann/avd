@@ -212,7 +212,7 @@ jobs:
           ansible: ${{ matrix.ansible_version }}
           check_git: true
           check_git_enforced: true
-      # - uses: actions/upload-artifact@v2
+      # - uses: actions/upload-artifact@v3
       #   with:
       #     name: molecule-${{ matrix.avd_scenario }}-artifacts
       #     path: ${PWD}/ansible_collections/arista/avd/molecule/${{ matrix.avd_scenario }}
@@ -247,7 +247,7 @@ jobs:
           ansible: ${{ matrix.ansible_version }}
           check_git: true
           check_git_enforced: true
-      # - uses: actions/upload-artifact@v2
+      # - uses: actions/upload-artifact@v3
       #   with:
       #     name: molecule-${{ matrix.avd_scenario }}-artifacts
       #     path: ${PWD}/ansible_collections/arista/avd/molecule/${{ matrix.avd_scenario }}
@@ -301,7 +301,7 @@ jobs:
           ansible: ${{ matrix.ansible_version }}
           check_git: true
           check_git_enforced: true
-      # - uses: actions/upload-artifact@v2
+      # - uses: actions/upload-artifact@v3
       #   with:
       #     name: molecule-${{ matrix.avd_scenario }}-artifacts
       #     path: ${PWD}/ansible_collections/arista/avd/molecule/${{ matrix.avd_scenario }}
@@ -335,7 +335,7 @@ jobs:
           ansible: ${{ matrix.ansible_version }}
           check_git: true
           check_git_enforced: true
-      # - uses: actions/upload-artifact@v2
+      # - uses: actions/upload-artifact@v3
       #   with:
       #     name: molecule-${{ matrix.avd_scenario }}-artifacts
       #     path: ${PWD}/ansible_collections/arista/avd/molecule/${{ matrix.avd_scenario }}
@@ -433,7 +433,7 @@ jobs:
         run: make collection-build
       - name: 'run galaxy-importer checks'
         run: python -m galaxy_importer.main *.tar.gz
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: importer-logs
           path: ./importer_result.json
