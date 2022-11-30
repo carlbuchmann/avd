@@ -1,0 +1,5 @@
+validation_commands_outputs:
+{% for validation_command in avd_validation.commands if avd_validation.commands is arista.avd.defined %}
+  "{{ validation_command.command | replace(" ", "_") }}":
+    {{ switch_state.stdout[loop.index0] | to_nice_yaml(indent=2) | trim | indent(4) }}
+{% endfor %}

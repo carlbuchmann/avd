@@ -32,126 +32,160 @@
   tags:
     - always
 
-- name: Generate variables for testing
-  ansible.builtin.template:
-    src: generate_vars_for_testing.j2
-    dest: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
-    mode: 0664
-  delegate_to: localhost
-  run_once: true
-  tags:
-    - always
+- name: Generate Validation tests
+  arista.avd.yaml_templates_to_facts:
+    templates:
+      - python_module: "ansible_collections.arista.avd.roles.eos_validate_state.python_modules.ntp"
+        python_class_name: "AvdValidation"
+      - python_module: "ansible_collections.arista.avd.roles.eos_validate_state.python_modules.bgp"
+        python_class_name: "AvdValidation"
 
-- name: Include vars from validate_state_vars.yml
-  ansible.builtin.include_vars:
-    file: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
-  delegate_to: localhost
-  run_once: true
-  tags:
-    - always
+- name: view commands
+  debug:
+    msg: "{{ avd_validation }}"
 
-- name: Gather EOS platform and version details
-  arista.eos.eos_command:
-    commands: "show version | json"
-  register: eos_version
+- name: Gather switch state
+  eos_command:
+    commands: "{{ avd_validation.commands }}"
+  register: switch_state
   tags:
-    - platform_information
-    - hardware
+    - gather_switch_state
 
-- name: Display device platform and release information
-  delegate_to: localhost
-  ansible.builtin.debug:
-    msg: "The device {{ inventory_hostname }} is a {{ eos_version.stdout_lines.0.modelName }} model running EOS version {{ eos_version.stdout_lines.0.version }}"
-  tags:
-    - platform_information
-    - hardware
+- name: Standardize output
+  arista.avd.yaml_templates_to_facts:
+    templates:
+      - template: show_output.j2
+    dest: "{{ eos_validate_state_commands_output_path }}"
+
+
+- name: Test output
+  arista.avd.yaml_templates_to_facts:
+    templates:
+      - python_module: "ansible_collections.arista.avd.roles.eos_validate_state.python_modules.ntp"
+        python_class_name: "AvdAssert"
+      # - python_module: "ansible_collections.arista.avd.roles.eos_validate_state.python_modules.bgp"
+      #   python_class_name: "AvdValidation"
+
+# - name: Generate variables for testing
+#   template:
+#     src: generate_vars_for_testing.j2
+#     dest: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
+#     mode: 0664
+#   delegate_to: localhost
+#   run_once: true
+#   tags:
+#     - always
+
+# - name: Include vars from validate_state_vars.yml
+#   include_vars:
+#     file: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
+#   delegate_to: localhost
+#   run_once: true
+#   tags:
+#     - always
+
+# - name: Gather EOS platform and version details
+#   eos_command:
+#     commands: "show version | json"
+#   register: eos_version
+#   tags:
+#     - platform_information
+#     - hardware
+
+# - name: Display device platform and release information
+#   delegate_to: localhost
+#   debug:
+#     msg: "The device {{ inventory_hostname }} is a {{ eos_version.stdout_lines.0.modelName }} model running EOS version {{ eos_version.stdout_lines.0.version }}"
+#   tags:
+#     - platform_information
+#     - hardware
 
   #####################################
   ## Load tasks for validation tests ##
   #####################################
 
-- name: Load Hardware validation tasks
-  ansible.builtin.include_tasks: "hardware.yml"
-  when:
-    - eos_version.stdout_lines.0.modelName != 'vEOS'
-    - eos_version.stdout_lines.0.modelName != 'vEOS-lab'
-    - eos_version.stdout_lines.0.modelName != 'cEOSLab'
-  tags:
-    - hardware
+# - name: Load Hardware validation tasks
+#   include_tasks: "hardware.yml"
+#   when:
+#     - eos_version.stdout_lines.0.modelName != 'vEOS'
+#     - eos_version.stdout_lines.0.modelName != 'vEOS-lab'
+#     - eos_version.stdout_lines.0.modelName != 'cEOSLab'
+#   tags:
+#     - hardware
 
-- name: Load ntp tasks
-  ansible.builtin.include_tasks: "ntp.yml"
-  tags:
-    - ntp
+# - name: Load ntp tasks
+#   include_tasks: "ntp.yml"
+#   tags:
+#     - ntp
 
-- name: Load interface state tasks
-  ansible.builtin.include_tasks: "interface_state.yml"
-  tags:
-    - interfaces_state
+# - name: Load interface state tasks
+#   include_tasks: "interface_state.yml"
+#   tags:
+#     - interfaces_state
 
-- name: Load LLDP Topology tasks when dns domain is defined
-  ansible.builtin.include_tasks: "lldp_topology_fqdn.yml"
-  tags:
-    - lldp_topology
-  when: dns_domain is defined
+# - name: Load LLDP Topology tasks when dns domain is defined
+#   include_tasks: "lldp_topology_fqdn.yml"
+#   tags:
+#     - lldp_topology
+#   when: dns_domain is defined
 
-- name: Load LLDP Topology tasks when dns domain is not defined
-  ansible.builtin.include_tasks: "lldp_topology_no_fqdn.yml"
-  tags:
-    - lldp_topology
-  when: dns_domain is not defined
+# - name: Load LLDP Topology tasks when dns domain is not defined
+#   include_tasks: "lldp_topology_no_fqdn.yml"
+#   tags:
+#     - lldp_topology
+#   when: dns_domain is not defined
 
-- name: Load mlag tasks
-  ansible.builtin.include_tasks: "mlag.yml"
-  when: |
-    (mlag_configuration is defined and mlag_configuration is not none)
-  tags:
-    - mlag
+# - name: Load mlag tasks
+#   include_tasks: "mlag.yml"
+#   when: |
+#     (mlag_configuration is defined and mlag_configuration is not none)
+#   tags:
+#     - mlag
 
-- name: Load IP Reachability tasks
-  ansible.builtin.include_tasks: "ip_reachability.yml"
-  tags:
-    - ip_reachability
+# - name: Load IP Reachability tasks
+#   include_tasks: "ip_reachability.yml"
+#   tags:
+#     - ip_reachability
 
-- name: Load BGP tasks
-  ansible.builtin.include_tasks: "bgp_check.yml"
-  when: |
-    (router_bgp is defined and router_bgp is not none)
-  tags:
-    - bgp_check
+# - name: Load BGP tasks
+#   include_tasks: "bgp_check.yml"
+#   when: |
+#     (router_bgp is defined and router_bgp is not none)
+#   tags:
+#     - bgp_check
 
-- name: Validate reload cause
-  ansible.builtin.include_tasks: "reload_cause.yml"
-  tags:
-    - reload_cause
-    - optional
-    - never
+# - name: Validate reload cause
+#   include_tasks: "reload_cause.yml"
+#   tags:
+#     - reload_cause
+#     - optional
+#     - never
 
-- name: Validate routing table
-  ansible.builtin.include_tasks: "routing_table.yml"
-  tags:
-    - routing_table
+# - name: Validate routing table
+#   include_tasks: "routing_table.yml"
+#   tags:
+#     - routing_table
 
-- name: Validate loopback reachability
-  ansible.builtin.include_tasks: "loopback_reachability.yml"
-  tags:
-    - loopback_reachability
+# - name: Validate loopback reachability
+#   include_tasks: "loopback_reachability.yml"
+#   tags:
+#     - loopback_reachability
 
-- name: Remove generated vars for testing
-  ansible.builtin.file:
-    path: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
-    state: absent
-  delegate_to: localhost
-  run_once: true
-  tags:
-    - always
+# - name: Remove generated vars for testing
+#   file:
+#     path: "{{ eos_validate_state_dir }}/validate_state_vars.yml"
+#     state: absent
+#   delegate_to: localhost
+#   run_once: true
+#   tags:
+#     - always
 
   ####################################
   ##       Validation Reports       ##
   ####################################
 
-- name: Create reports
-  ansible.builtin.include_tasks: "reports.yml"
-  tags:
-    - always
-    - reports
+# - name: Create reports
+#   include_tasks: "reports.yml"
+#   tags:
+#     - always
+#     - reports
