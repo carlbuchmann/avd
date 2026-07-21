@@ -48,7 +48,7 @@ This will be executed automatically by VSCode by following these steps:
 
 Developing with your local Python environment requires you to configure and install the AVD project development tools and dependencies installed on your workstation:
 
-- [Python 3.10](https://docs.python.org/) or later and [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html).
+- [Python 3.10](https://docs.python.org/) or later and [Python Virtual Environments](https://docs.python.org/3/tutorial/venv.html) or [UV Virtual Environments](https://docs.astral.sh/uv/reference/cli/#uv-pip-check).
 - Additional AVD Python package dependencies.
 - [Make](https://www.gnu.org/software/make/manual/make.html): Leveraged for automating software building and test procedures.
 - [Docker](https://docs.docker.com/engine/install/) (Optional): Some of the tests require docker to be executed locally and useful when troubleshooting failures of the CI pipeline.
@@ -61,6 +61,8 @@ Recommended steps with Python virtual environment:
 !!! note
     Ensure the virtual environment is located outside of the AVD project directory.
 
+**Installation Steps with Python Virtual Environments:**
+
 ```shell
 # Create a Python virtual environment `python -m venv <virtual-environment-name>`.
 python3 -m venv avd-venv
@@ -71,8 +73,22 @@ source avd-venv/bin/activate
 # Install AVD project dev requirements and `pyavd` in your Python Virtual environment.
 # The installation _must_ be performed from the root of the cloned avd repository.
 cd avd
-pip3 install --group dev --upgrade
-make pyavd-editable-install
+make install-dev-requirements
+```
+
+**Installation Steps with UV Virtual Environments:**
+
+```shell
+#Create a UV virtual environment `uv venv <virtual-environment-name>`
+uv venv avd-ven
+
+# Activate UV virtual environment `source <virtual-environment-name>/bin/activate`.
+source avd-venv/bin/activate
+
+# Install AVD project dev requirements and `pyavd` in your UV Virtual environment.
+# The installation _must_ be performed from the root of the cloned avd repository.
+cd avd
+make uv-install-dev-requirements
 ```
 
 !!! note

@@ -151,3 +151,16 @@ docs-serve: ## Run `mkdocs serve` on http://127.0.0.1:8000. The Schema Explorer 
 .PHONY: docs-serve-docker
 docs-serve-docker: ## Same as docs-serve, but inside the webdoc_avd container (no host deps required).
 	docker compose -f development/docker-compose.yml up
+
+
+#############################################
+# Developer Tooling                         #
+#############################################
+
+.PHONY: install-dev-requirements
+install-dev-requirements: ## Pip install Python dev requirements and and install PyAVD as editable.
+	pip install --group "pyproject.toml:dev" --editable "./python-avd[ansible]"
+
+.PHONY: uv-install-dev-requirement
+uv-install-dev-requirements: ## UV Pip install Python dev requirements and build and install PyAVD as editable.
+	uv pip install --group "pyproject.toml:dev" --editable "./python-avd[ansible]"

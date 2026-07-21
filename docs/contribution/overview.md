@@ -23,6 +23,7 @@ The following individuals are on the AVD Core Team:
 - Carl Baillargeon ([@carl-baillargeon](https://github.com/carl-baillargeon))
 - Alexey Gorbunov ([@alexeygorbunov](https://github.com/alexeygorbunov))
 - Joel Breton ([@joelbreton2](https://github.com/joelbreton2))
+- Petr Ankudinov ([@ankudinov](https://github.com/ankudinov))
 
 ## Contributing
 
